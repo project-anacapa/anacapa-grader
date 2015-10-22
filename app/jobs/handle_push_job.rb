@@ -3,7 +3,7 @@ class HandlePushJob < ActiveJob::Base
 
   def perform(*args)
     payload = *args
-    logger = Logger.new(STDOUT)
+    #logger = Logger.new(STDOUT)
     logger.info payload
     url = payload[:head_commit][:url]
     logger.info url
