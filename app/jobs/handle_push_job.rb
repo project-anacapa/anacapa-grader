@@ -10,7 +10,7 @@ class HandlePushJob < ActiveJob::Base
     begin
       # use the directory...
       g = Git.clone(url, 'workspace', :path => dir)
-      g.checkout(payload.head_commit.id)
+      g.checkout(payload[:head_commit][:id])
       logger.info Dir.entries(dir)
     ensure
       # remove the directory.
