@@ -1,8 +1,7 @@
 class HandlePushJob < ActiveJob::Base
   queue_as :default
 
-  def perform(*args)
-    payload = *args
+  def perform(payload)
     #logger = Logger.new(STDOUT)
     logger.info payload
     url = payload[:head_commit][:url]
