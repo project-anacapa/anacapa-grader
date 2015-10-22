@@ -5,10 +5,12 @@ class HandlePushJob < ActiveJob::Base
     payload = *args
     logger = Logger.new(STDOUT)
     logger.info payload
+    url = payload[:head_commit][:url]
+    logger.info url
     dir = Dir.mktmpdir
     begin
       # use the directory...
-      g = Git.clone(payload[:head_commit][:url], 'workspace', :path => dir)
+      g = Git.clone(url, 'workspace', :path => dir)
       g.checkout(payload.head_commit.id)
       logger.info Dir.entries(dir)
     ensure
