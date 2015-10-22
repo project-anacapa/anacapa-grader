@@ -46,3 +46,5 @@ group :development do
 end
 
 gem 'github_webhook'
+
+gem 'sidekiq'

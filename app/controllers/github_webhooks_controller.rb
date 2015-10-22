@@ -4,7 +4,7 @@ class GithubWebhooksController < ActionController::Base
   include GithubWebhook::Processor
 
   def push(payload)
-    # TODO: handle push webhook
+    HandlePushJob.perform_later payload
   end
 
   def webhook_secret(payload)
