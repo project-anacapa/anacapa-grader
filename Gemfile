@@ -48,3 +48,5 @@ end
 gem 'github_webhook'
 
 gem 'sidekiq'
+
+gem 'puma'
