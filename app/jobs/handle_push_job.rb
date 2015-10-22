@@ -4,7 +4,7 @@ class HandlePushJob < ActiveJob::Base
   def perform(payload)
     #logger = Logger.new(STDOUT)
     logger.info payload
-    url = payload[:head_commit][:url]
+    url = payload[:repository][:url]
     logger.info url
     dir = Dir.mktmpdir
     begin
