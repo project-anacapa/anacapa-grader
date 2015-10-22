@@ -50,3 +50,5 @@ gem 'github_webhook'
 gem 'sidekiq'
 
 gem 'puma'
+
+gem 'git'
