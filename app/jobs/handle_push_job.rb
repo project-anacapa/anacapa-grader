@@ -15,7 +15,7 @@ class HandlePushJob < ActiveJob::Base
       logger.info Dir.entries(dir)
     ensure
       # remove the directory.
-      FileUtils.remove_entry dir
+      #FileUtils.remove_entry dir
     end
     # Do something later
   end
