@@ -52,3 +52,6 @@ gem 'sidekiq'
 gem 'puma'
 
 gem 'git'
+
+gem 'net-ssh'
+gem 'net-scp'
