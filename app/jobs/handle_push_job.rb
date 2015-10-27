@@ -21,6 +21,7 @@ class HandlePushJob < ActiveJob::Base
                      :keys_only => TRUE
                      ) do |ssh|
         killall_processes(ssh)
+        clear_all(ssh)
         copy_workspace(machine,dir)
         process_testables(ssh,dir)
       end
@@ -45,30 +46,39 @@ class HandlePushJob < ActiveJob::Base
     ssh.exec!("kill -9 `ps -o pid= -N T`")
   end
 
+  def clear_all(ssh)
+    ssh.exec!("rm -rf ~/instructor_files ~/student_files ~/student ~/workspace ~/executables")
+  end
+
   def process_testables(ssh, dir)
     testables_dir = "#{dir}/grader/testables"
     results_dir   = "#{dir}/results"
 
     create_expected_workspace(ssh)
 
-    build_testables(ssh,testablesdir)
+    build_testables(ssh,testables_dir)
 
-    Dir.foreach(testablesdir) do |file|
-      if File.directory?(file)
-        generate_expected(ssh,file)
+    Dir.foreach(testables_dir) do |file|
+      next if file == '.' || file == '..'
+      testable_path = "#{testables_dir}/#{file}"
+      if File.directory?(testable_path)
+        generate_expected(ssh,testable_path)
       end
     end
 
+    clear_workspace(ssh)
     create_student_workspace(ssh)
 
-    build_testables(ssh,testablesdir)
+    build_testables(ssh,testables_dir)
 
     #Remove the solutions and the build files. We are going to run untrusted code.
-    remove_instructor_files();
+    remove_instructor_files(ssh);
 
-    Dir.foreach(testablesdir) do |file|
-      if File.directory?(file)
-        do_testable(ssh,file,results_dir)
+    Dir.foreach(testables_dir) do |file|
+      next if file == '.' || file == '..'
+      testable_path = "#{testables_dir}/#{file}"
+      if File.directory?(testable_path)
+        do_testable(ssh,testable_path,results_dir)
       end
     end
   end
@@ -85,72 +95,78 @@ class HandlePushJob < ActiveJob::Base
         "#{dir}/grader/student_files", ".",
         :recursive => TRUE,
         :ssh => ssh)
-
     Net::SCP.upload!(machine.host, machine.user,
         "#{dir}/student", ".",
         :recursive => TRUE,
         :ssh => ssh)
   end
 
-  def create_expected_workspace(ssh,dir)
+  def create_expected_workspace(ssh)
     ssh.exec!('mkdir ~/workspace')
     #assume we use all student files
-    ssh.exec!('cp ~/grader/student_files/* ~/workspace')
+    ssh.exec!('cp -r ~/student_files/* ~/workspace')
     #assume we use all instructor files
-    ssh.exec!('cp ~/grader/instructor_files/* ~/workspace')
+    ssh.exec!('cp -r ~/instructor_files/* ~/workspace')
     #create an executables directory
     ssh.exec!('mkdir ~/executables')
   end
 
-  def clear_workspace()
+  def clear_workspace(ssh)
     ssh.exec!('rm -rf ~/workspace ~/executables')
   end
 
-  def create_student_workspace(ssh,dir)
+  def create_student_workspace(ssh)
     ssh.exec!('mkdir ~/workspace')
     #assume we use all student files
-    ssh.exec!('cp ~/student ~/workspace')
+    ssh.exec!('cp -r ~/student/* ~/workspace')
     #assume we use all instructor files
-    ssh.exec!('cp ~/grader/instructor_files/* ~/workspace')
+    ssh.exec!('cp -r ~/instructor_files/* ~/workspace')
     #create an executables directory
     ssh.exec!('mkdir ~/executables')
   end
 
 
   #If a expected file doesn't exist generate one
-  def generate_expected(ssh,dir)
-    Dir.foreach(dir) do |file|
-      if File.directory?(file)
-        expected_filename = "#{file}/expected_file"
-        if not File.exists?(expected_file)
-          run_testcase(ssh,file,expected_filename)
+  def generate_expected(ssh,testable_path)
+    Dir.foreach(testable_path) do |file|
+      next if file == '.' || file == '..'
+      testcase_path = "#{testable_path}/#{file}"
+      if File.directory?(testcase_path)
+        expected_filename = "#{testcase_path}/expected_file"
+        if not File.exists?(expected_filename)
+          run_testcase(ssh,testcase_path,expected_filename)
         end
       end
     end
   end
 
   #Put the results into an output directory
-  def do_testable(ssh,dir,results_dir)
-    testable_name = File.basename(file)
-    Dir.foreach(dir) do |file|
-      if File.directory?(file)
+  def do_testable(ssh,testable_path,results_dir)
+    testable_name = File.basename(testable_path)
+    Dir.foreach(testable_path) do |file|
+      next if file == '.' || file == '..'
+      testcase_name = file
+      testcase_path = "#{testable_path}/#{file}"
+      if File.directory?(testcase_path)
         output_filename = "#{results_dir}/#{testable_name}/#{testcase_name}"
-        run_testcase(ssh, file, output_filename)
+        run_testcase(ssh, testcase_path, output_filename)
       end
     end
   end
 
   #Student code should never read the grader files
   def remove_instructor_files(ssh)
-    ssh.exec('rm -rf ~/grader')
+    ssh.exec!('rm -rf ~/grader')
   end
 
 
-  def build_testables(testablesdir)
-    Dir.foreach(testablesdir) do |file|
-      if File.directory?(file)
-        build_testable(ssh,file)
-        copy_to_executables(ssh,file)
+  def build_testables(ssh,testables_dir)
+    Dir.foreach(testables_dir) do |file|
+      next if file == '.' || file == '..'
+      testable_dir = "#{testables_dir}/#{file}"
+      if File.directory?(testable_dir)
+        build_testable(ssh,testable_dir)
+        copy_to_executables(ssh,testable_dir)
       end
     end
   end
@@ -168,6 +184,7 @@ class HandlePushJob < ActiveJob::Base
 
   def run_testcase(ssh,dir,output_file)
     testcase_name = File.basename(dir)
+
     File.open(output_file, 'w') do |output|
       ssh.exec!("~/executables/#{testcase_name}") do |channel, stream, data|
         output << data if stream == :stdout
