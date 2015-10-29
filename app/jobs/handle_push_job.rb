@@ -5,11 +5,12 @@ require 'net/scp'
 class HandlePushJob < ActiveJob::Base
   queue_as :default
 
-  def perform(url, version, grader_url, grader_version)
+  def perform(url, version, grader_url, results_url)
     Dir.mktmpdir do |dir|
       # use the directory...
       clone_revision(url,version,dir)
-      clone_grader(grader_url, grader_version, dir)
+      clone_grader(grader_url, dir)
+      git_results = clone_results(results_url, dir)
 
       #Right now we only support one worker
       machine = WorkerMachine.get_idle_machine()
@@ -26,12 +27,26 @@ class HandlePushJob < ActiveJob::Base
         process_testables(ssh,dir)
       end
 
+      push_results(git_results)
+
+
     end
   end
 
-  def clone_grader(url,version,dir)
+  def clone_grader(url,dir)
     g = Git.clone(url, 'grader', :path => dir)
-    g.checkout(version)
+    #g.checkout(version)
+
+  def clone_results(url,dir)
+    g = Git.clone(url, 'results', :path => dir)
+  end
+    #g.checkout(version)
+  end
+
+  def push_results(g)
+    g.add(:all=>true)
+    g.commit('grader')
+    g.push
   end
 
   def clone_revision(url,version,dir)
@@ -51,16 +66,16 @@ class HandlePushJob < ActiveJob::Base
   end
 
   def process_testables(ssh, dir)
-    testables_dir = "#{dir}/grader/testables"
-    results_dir   = "#{dir}/results"
+    testables_path = "#{dir}/grader/testables"
+    results_path   = "#{dir}/results/"
 
     create_expected_workspace(ssh)
 
-    build_testables(ssh,testables_dir)
+    build_testables(ssh,testables_path)
 
-    Dir.foreach(testables_dir) do |file|
+    Dir.foreach(testables_path) do |file|
       next if file == '.' || file == '..'
-      testable_path = "#{testables_dir}/#{file}"
+      testable_path = "#{testables_path}/#{file}"
       if File.directory?(testable_path)
         generate_expected(ssh,testable_path)
       end
@@ -69,16 +84,16 @@ class HandlePushJob < ActiveJob::Base
     clear_workspace(ssh)
     create_student_workspace(ssh)
 
-    build_testables(ssh,testables_dir)
+    build_testables(ssh,testables_path)
 
     #Remove the solutions and the build files. We are going to run untrusted code.
     remove_instructor_files(ssh);
 
-    Dir.foreach(testables_dir) do |file|
+    Dir.foreach(testables_path) do |file|
       next if file == '.' || file == '..'
-      testable_path = "#{testables_dir}/#{file}"
+      testable_path = "#{testables_path}/#{file}"
       if File.directory?(testable_path)
-        do_testable(ssh,testable_path,results_dir)
+        do_testable(ssh,testable_path,results_path)
       end
     end
   end
@@ -141,14 +156,15 @@ class HandlePushJob < ActiveJob::Base
   end
 
   #Put the results into an output directory
-  def do_testable(ssh,testable_path,results_dir)
+  def do_testable(ssh,testable_path,results_path)
     testable_name = File.basename(testable_path)
     Dir.foreach(testable_path) do |file|
       next if file == '.' || file == '..'
       testcase_name = file
       testcase_path = "#{testable_path}/#{file}"
       if File.directory?(testcase_path)
-        output_filename = "#{results_dir}/#{testable_name}/#{testcase_name}"
+        FileUtils.mkdir_p("#{results_path}/#{testable_name}")
+        output_filename = "#{results_path}/#{testable_name}/#{testcase_name}"
         run_testcase(ssh, testcase_path, output_filename)
       end
     end
@@ -178,6 +194,8 @@ class HandlePushJob < ActiveJob::Base
 
   def build_testable(ssh,dir)
     executable_filename = File.basename(dir)
+    logger = Logger.new(STDOUT)
+    logger.info executable_filename
     #we need to figure out which rule to invoke from dir
     ssh.exec!("make -C ~/workspace #{executable_filename}")
   end
@@ -186,7 +204,7 @@ class HandlePushJob < ActiveJob::Base
     testcase_name = File.basename(dir)
 
     File.open(output_file, 'w') do |output|
-      ssh.exec!("~/executables/#{testcase_name}") do |channel, stream, data|
+      ssh.exec!("cd ~/executables && ./#{testcase_name}") do |channel, stream, data|
         output << data if stream == :stdout
       end
     end
