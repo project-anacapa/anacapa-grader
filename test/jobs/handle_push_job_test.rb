@@ -7,13 +7,12 @@ class HandlePushJobTest < ActiveJob::TestCase
 
   login = "#{anacapabot_user}:#{anacapabot_password}"
 
-  url = "https://github.com/jolting/sample-repo.git"
-  version = "72a17e85c0a94a6b5c40a04d13435d104c011215"
+  url = "https://github.com/classroom-test-1/lab00-jolting"
+  version = "5216d68191ee813db2a08276186957a5a98cb724"
 
-  grader_url = "https://github.com/jolting/anacapa-proposed-project-format.git"
-  #grader_version = "0312844ca23de62baeb40fa1d8ed97c0e484f36a"
+  grader_url = "https://github.com/classroom-test-1/grader-lab00.git"
 
-  results_url = "https://#{login}@github.com/jolting/anacapa-results.git"
+  results_url = "https://#{login}@github.com/classroom-test-1/results-lab00-jolting.git"
 
   HandlePushJob.perform_now(url,version,grader_url,results_url)
 end
