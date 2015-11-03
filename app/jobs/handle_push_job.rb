@@ -43,6 +43,7 @@ class HandlePushJob < ActiveJob::Base
       g.commit('grader')
       g.push
     rescue
+      #commit throws an exception if there is nothing to commit
     end
   end
 

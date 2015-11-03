@@ -53,5 +53,12 @@ gem 'puma'
 
 gem 'git'
 
+gem 'faraday-http-cache'
+
+gem 'octokit'
+gem 'omniauth'
+gem 'omniauth-github'
+
+
 gem 'net-ssh'
 gem 'net-scp'
