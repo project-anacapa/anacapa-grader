@@ -60,7 +60,10 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
-  resource :grades, only: :show, defaults: { formats: :json }
+
+  get '/grades/:id(.:format)', to: 'grades#show', as: 'grades'
+
+  #resource :grades, only: [:index, :show], defaults: { formats: :json }
 
   resource :github_webhooks, only: :create, defaults: { formats: :json }
 end
