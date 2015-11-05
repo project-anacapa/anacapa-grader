@@ -10,8 +10,7 @@ class GenerateExpectedJob < ActiveJob::Base
       clone(grader_url, dir, "grader")
       git_expected = clone(expected_url, dir,"expected")
 
-      clear_expected(dir)
-
+      git_expected.remove('.',{:recursive =>  TRUE})
       #Right now we only support one worker
       machine = WorkerMachine.get_idle_machine()
 
@@ -45,9 +44,6 @@ class GenerateExpectedJob < ActiveJob::Base
           :ssh => ssh)
   end
 
-  def clear_expected(dir)
-    FileUtils.rm_rf("#{dir}/expected/*")
-  end
 
   def killall_processes(ssh)
     #killall processes execpt those returned by
@@ -61,10 +57,15 @@ class GenerateExpectedJob < ActiveJob::Base
     ssh.exec!("rm -rf ~/instructor_files ~/student_files ~/student ~/workspace ~/executables")
   end
 
-
   def copy_expected(dir)
+
+    FileUtils.cp_r "#{dir}/grader/testables", "#{dir}/expected/"
+  end
+
+  def copy_expectd_old(dir)
     testables_path = "#{dir}/grader/testables"
-    expected_path = "#{dir}/expected"
+    expected_path = "#{dir}/expected/results"
+
     Dir.foreach(testables_path) do |file|
       next if file == '.' || file == '..'
       testable_path = "#{testables_path}/#{file}"
@@ -130,8 +131,9 @@ class GenerateExpectedJob < ActiveJob::Base
 
   def push(g)
     g.add(:all=>true)
+
     begin
-      g.commit('grader')
+      g.commit_all('grader')
       g.push
     rescue
     end

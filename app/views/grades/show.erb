@@ -1,0 +1,51 @@
+<h1>Grades</h1>
+
+<style type="text/css">
+  table, td, th {
+    border: 1px solid green;
+  }
+
+  th {
+    background-color: green;
+    color: white;
+  }
+
+  td {
+    height: 50px;
+    vertical-align: top;
+  }
+</style>
+<table>
+<!--
+  <tr>
+    <th>Title</th>
+    <th>Summary</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+-->
+<% @grade.testables.each do |testable_name, testcases| %>
+  <tr>
+    <td>Testable: </td>
+    <td><%= testable_name %></td>
+  </tr>
+
+  <tr>
+    <td>Testcase Name</td>
+    <td>Grade</td>
+    <td>Total Points</td>
+    <td>Diff</td>
+  </tr>
+
+  <% testcases.each do |testcase_name, testcase| %>
+  <tr>
+    <td><%= testcase_name %></td>
+    <td><%= testcase[:grade] %></td>
+    <td><%= testcase[:total_points] %></td>
+    <td><pre><%= testcase[:diff] %></pre></td>
+  </tr>
+<% end %>
+<% end %>
+
+</table>

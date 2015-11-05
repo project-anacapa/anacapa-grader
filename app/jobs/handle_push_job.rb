@@ -12,17 +12,18 @@ class HandlePushJob < ActiveJob::Base
       clone(grader_url, dir,"grader")
       git_results  = clone(results_url, dir,"results")
 
-      clear_results(dir)
+      git_results.remove('.',{:recursive =>  TRUE})
 
       #Right now we only support one worker
       machine = WorkerMachine.get_idle_machine()
-
+      logger = Logger.new(STDOUT)
       Net::SSH.start(machine.host, machine.user,
                      :port => machine.port,
                      :keys => [],
                      :key_data => [machine.private_key],
                      :keys_only => TRUE
                      ) do |ssh|
+        logger.info 'killall'
         killall_processes(ssh)
         clear_all(ssh)
         copy_workspace(machine,dir)
@@ -57,10 +58,6 @@ class HandlePushJob < ActiveJob::Base
     # ps T selects all processes and threads that belong to the current terminal
     # -N negates it
     ssh.exec!("kill -9 `ps -o pid= -N T`")
-  end
-
-  def clear_results(dir)
-    FileUtils.rm_rf("#{dir}/results/*")
   end
 
   def clear_all(ssh)

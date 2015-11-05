@@ -5,8 +5,9 @@ class GradesController < ApplicationController
   #before_filter :fetch_user, :except => [:index, :create]
   def show
 
-    grade = Grade.new(current_user,current_user,'lab00')
+    @grade = Grade.new(current_user,current_user,'lab00')
     respond_to do |format|
+      format.html
       format.json { render json: grade }
       format.xml { render xml: grade }
     end
