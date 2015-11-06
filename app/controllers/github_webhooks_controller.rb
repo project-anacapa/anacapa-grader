@@ -13,7 +13,10 @@ class GithubWebhooksController < ActionController::Base
     org = fields[1]
     type = fields[2]
     project = fields[3]
+    type = project if type == nil
+
     user = fields[4]
+
 
     organization = Organization.find_by name: org
 
