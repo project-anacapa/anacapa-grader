@@ -43,7 +43,7 @@ class HandlePushJob < ActiveJob::Base
   def push(g)
     g.add(:all=>true)
     begin
-      g.commit('grader')
+      g.commit('grader', {:author=> "AnacapaBot <hunterlaux+anacapabot@gmail.com>"})
       g.push
     rescue
       #commit throws an exception if there is nothing to commit
