@@ -136,7 +136,7 @@ class GenerateExpectedJob < ActiveJob::Base
     g.add(:all=>true)
 
     begin
-      g.commit_all('grader')
+      g.commit('grader')
       g.push
     rescue
     end
