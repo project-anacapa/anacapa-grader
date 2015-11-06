@@ -12,6 +12,6 @@ class WorkerMachine
 
   #todo add multiple machines
   def self.get_idle_machine()
-    WorkerMachine.new(ENV['WORKER_HOST'],ENV['WORKER_USER'],ENV['WORKER_PORT'],ENV['WORKER_PRIVATE_KEY'])
+    WorkerMachine.new(ENV['ANACAPA_WORKER_HOST'],ENV['ANACAPA_WORKER_USER'],ENV['ANACAPA_WORKER_PORT'],ENV['ANACAPA_WORKER_PRIVATE_KEY'])
   end
 end
