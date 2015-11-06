@@ -10,16 +10,19 @@ class GithubWebhooksController < ActionController::Base
 
     path = URI.parse(url).path
     fields =  /\/(.+)\/(?:(.+)-)?(.*)-(.*)/.match(path)
-    org = fields[0]
-    type = fields[1]
-    project = fields[2]
-    user = fields[3]
+    org = fields[1]
+    type = fields[2]
+    project = fields[3]
+    user = fields[4]
 
     organization = Organization.find_by name: org
 
     instructor_token = organization.user.token
     student_url      = "https://#{instructor_token}@github.com/#{org}/#{project}-#{user}"
-    expected_url     = "https://#{instructor_token}@github.com/#{org}/expected-#{project}"
+    grader_repo    = "#{org}/grader-#{project}"
+    grader_url     = "https://#{instructor_token}@github.com/#{grader_repo}"
+    expected_repo    = "#{org}/expected-#{project}"
+    expected_url     = "https://#{instructor_token}@github.com/#{expected_repo}"
     results_repo     = "#{org}/results-#{project}-#{user}"
     results_url      = "https://#{instructor_token}@github.com/#{results_repo}"
 
@@ -27,6 +30,10 @@ class GithubWebhooksController < ActionController::Base
     when 'results'
     when 'expected'
     when 'grader'
+      if(organization.user.github_client.repositories.repository?(expected_repo))
+        organization.user.github_client.repositories.create_repository(expected_repo)
+      end
+      GenerateExpectedJob.perform_later(grader_url,expected_url)
     when 'report'
     else
       if(organization.user.github_client.repositories.repository?(results_repo))
