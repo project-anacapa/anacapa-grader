@@ -9,7 +9,12 @@ class GithubWebhooksController < ActionController::Base
     version = payload["head_commit"]["id"]
 
     path = URI.parse(url).path
-    [org,type,project,user] = /\/(.+)\/(?:(.+)-)?(.*)-(.*)/.match(path)
+    fields =  /\/(.+)\/(?:(.+)-)?(.*)-(.*)/.match(path)
+    org = fields[0]
+    type = fields[1]
+    project = fields[2]
+    user = fields[3]
+    
     organization = Organization.find_by :name org
 
     instructor_token = organization.user.token
