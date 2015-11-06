@@ -30,14 +30,14 @@ class GithubWebhooksController < ActionController::Base
     when 'results'
     when 'expected'
     when 'grader'
-      if(organization.user.github_client.repositories.repository?(expected_repo))
-        organization.user.github_client.repositories.create_repository(expected_repo)
+      if(organization.user.github_client.repository?(expected_repo))
+        organization.user.github_client.create_repository(expected_repo)
       end
       GenerateExpectedJob.perform_later(grader_url,expected_url)
     when 'report'
     else
-      if(organization.user.github_client.repositories.repository?(results_repo))
-        organization.user.github_client.repositories.create_repository(results_repo)
+      if(organization.user.github_client.repository?(results_repo))
+        organization.user.github_client.create_repository(results_repo)
       end
       HandlePushJob.perform_later(student_url,version,expected_url,results_url)
     end
