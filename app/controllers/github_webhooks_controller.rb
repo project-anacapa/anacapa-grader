@@ -26,6 +26,7 @@ class GithubWebhooksController < ActionController::Base
     results_repo     = "#{org}/results-#{project}-#{user}"
     results_url      = "https://#{instructor_token}@github.com/#{results_repo}.git"
 
+    Rails.application.config.logger.info type
     case type
     when 'results'
     when 'expected'
