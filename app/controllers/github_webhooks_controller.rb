@@ -46,6 +46,8 @@ class GithubWebhooksController < ActionController::Base
     when 'results'
     when 'expected'
     when 'grader'
+      Rails.application.config.logger.info "Does the repo exist: #{organization.user.github_client.repository?(expected_repo)}"
+
       if not organization.user.github_client.repository?(expected_repo)
         organization.user.github_client.create_repository(expected_repo)
       end
