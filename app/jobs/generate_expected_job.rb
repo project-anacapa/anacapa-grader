@@ -16,7 +16,7 @@ class GenerateExpectedJob < ActiveJob::Base
       #Right now we only support one worker
       machine = WorkerMachine.get_idle_machine()
 
-      Rails.application.config.logger "SSH machine #{machine}"
+      Rails.application.config.logger.info "SSH machine #{machine}"
       Net::SSH.start(machine.host, machine.user,
                      :port => machine.port,
                      :keys => [],
