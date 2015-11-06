@@ -26,3 +26,5 @@ module AnacapaGrader
     config.logger = Logger.new(STDOUT)
   end
 end
+sh 'git config --global user.email "hunterlaux+anacapabot@gmail.com"' if `git config user.email`.empty?
+sh 'git config --global user.name "AnacapaBot"' if `git config user.name`.empty?
