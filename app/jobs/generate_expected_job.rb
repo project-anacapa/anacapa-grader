@@ -135,11 +135,11 @@ class GenerateExpectedJob < ActiveJob::Base
   def push(g)
     g.add(:all=>true)
 
-    #begin
-    g.commit('grader', {:author=> "AnacapaBot <hunterlaux+anacapabot@gmail.com>"})
-    g.push
-    #rescue
-    #end
+    begin
+      g.commit('grader', {:author=> "AnacapaBot <hunterlaux+anacapabot@gmail.com>"})
+      g.push
+    rescue
+    end
   end
 
   def build_testables(ssh,testables_dir)
