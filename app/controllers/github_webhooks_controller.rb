@@ -10,12 +10,24 @@ class GithubWebhooksController < ActionController::Base
 
     path = URI.parse(url).path
     fields =  /\/(.+)\/(?:(.+)-)?(.*)-(.*)/.match(path)
-    org = fields[1]
-    type = fields[2]
-    project = fields[3]
-    type = project if type == nil
 
-    user = fields[4]
+    org = fields[1]
+
+    if fields[2] == nil
+      if fields[3] == 'grader'
+        type = 'grader'
+        project = fields[4]
+      else
+        type = 'submission'
+        project = fields[3]
+        user    = fields[4]
+      end
+    else
+      type    = fields[2]
+      project = fields[3]
+      user    = fields[4]
+    end
+
 
 
     organization = Organization.find_by name: org
@@ -39,7 +51,7 @@ class GithubWebhooksController < ActionController::Base
       end
       GenerateExpectedJob.perform_later(grader_url,expected_url)
     when 'report'
-    else
+    when 'submission'
       if not organization.user.github_client.repository?(results_repo)
         organization.user.github_client.create_repository(results_repo)
       end
