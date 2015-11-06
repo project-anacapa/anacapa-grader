@@ -49,12 +49,13 @@ class GithubWebhooksController < ActionController::Base
       Rails.application.config.logger.info "Does the repo exist: #{organization.user.github_client.repository?(expected_repo)}"
 
       if not organization.user.github_client.repository?(expected_repo)
-        organization.user.github_client.create_repository(expected_repo)
+        organization.user.github_client.create_repository("expected-#{project}", :organization => org)
       end
       GenerateExpectedJob.perform_later(grader_url,expected_url)
     when 'report'
     when 'submission'
       if not organization.user.github_client.repository?(results_repo)
+        organization.user.github_client.create_repository("results-#{project}-#{user}", :organization => org)
         organization.user.github_client.create_repository(results_repo)
       end
       HandlePushJob.perform_later(student_url,version,expected_url,results_url)
