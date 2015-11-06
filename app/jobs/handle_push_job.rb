@@ -11,8 +11,10 @@ class HandlePushJob < ActiveJob::Base
       clone_revision(url,version,dir,"student")
       clone(grader_url, dir,"grader")
       git_results  = clone(results_url, dir,"results")
-
-      git_results.remove('.',{:recursive =>  TRUE})
+      begin
+        git_results.remove('.',{:recursive =>  TRUE})
+      rescue
+      end
 
       #Right now we only support one worker
       machine = WorkerMachine.get_idle_machine()

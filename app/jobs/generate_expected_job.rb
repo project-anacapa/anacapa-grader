@@ -9,8 +9,10 @@ class GenerateExpectedJob < ActiveJob::Base
       # use the directory...
       clone(grader_url, dir, "grader")
       git_expected = clone(expected_url, dir,"expected")
-
-      git_expected.remove('.',{:recursive =>  TRUE})
+      begin
+        git_expected.remove('.',{:recursive =>  TRUE})
+      rescue
+      end
       #Right now we only support one worker
       machine = WorkerMachine.get_idle_machine()
 
