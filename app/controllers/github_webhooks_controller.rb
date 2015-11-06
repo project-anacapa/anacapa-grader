@@ -19,11 +19,11 @@ class GithubWebhooksController < ActionController::Base
 
     instructor_token = organization.user.token
     student_url      = "https://#{instructor_token}@github.com/#{org}/#{project}-#{user}"
-    grader_repo    = "#{org}/grader-#{project}"
+    grader_repo    = "#{org}/grader-#{project}.git"
     grader_url     = "https://#{instructor_token}@github.com/#{grader_repo}"
-    expected_repo    = "#{org}/expected-#{project}"
+    expected_repo    = "#{org}/expected-#{project}.git"
     expected_url     = "https://#{instructor_token}@github.com/#{expected_repo}"
-    results_repo     = "#{org}/results-#{project}-#{user}"
+    results_repo     = "#{org}/results-#{project}-#{user}.git"
     results_url      = "https://#{instructor_token}@github.com/#{results_repo}"
 
     case type
