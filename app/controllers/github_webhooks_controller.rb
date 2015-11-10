@@ -17,6 +17,9 @@ class GithubWebhooksController < ActionController::Base
       if fields[3] == 'grader'
         type = 'grader'
         project = fields[4]
+      elsif field[3] == 'expected'
+        type = 'expected'
+        project = fields[4]
       else
         type = 'submission'
         project = fields[3]
