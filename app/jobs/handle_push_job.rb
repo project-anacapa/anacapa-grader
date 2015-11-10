@@ -6,10 +6,16 @@ class HandlePushJob < ActiveJob::Base
   queue_as :default
 
   def perform(url, version, grader_url, results_url)
+    Rails.application.config.logger.info "Begin student processing"
     Dir.mktmpdir do |dir|
       # use the directory...
+      Rails.application.config.logger.info "Clone revision"
+
+      Rails.application.config.logger.info "Clone student"
       clone_revision(url,version,dir,"student")
+      Rails.application.config.logger.info "Clone grader"
       clone(grader_url, dir,"grader")
+      Rails.application.config.logger.info "Clone results"
       git_results  = clone(results_url, dir,"results")
       begin
         git_results.remove('.',{:recursive =>  TRUE})
