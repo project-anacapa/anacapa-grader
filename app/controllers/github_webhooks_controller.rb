@@ -60,7 +60,7 @@ class GithubWebhooksController < ActionController::Base
       if not organization.user.github_client.repository?(results_repo)
         organization.user.github_client.create_repository("results-#{project}-#{user}", :organization => org, :private => "true")
       end
-      HandlePushJob.perform_later(student_url,version,expected_url,results_url)
+      HandlePushJob.perform_later(student_url,version,grader_url,results_url)
     end
 
   end
