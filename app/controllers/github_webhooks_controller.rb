@@ -36,6 +36,7 @@ class GithubWebhooksController < ActionController::Base
     organization = Organization.find_by name: org
 
     instructor_token = organization.user.token
+    student_repo     =
     student_url      = "https://#{instructor_token}@github.com/#{org}/#{project}-#{user}.git"
     grader_repo    = "#{org}/grader-#{project}"
     grader_url     = "https://#{instructor_token}@github.com/#{grader_repo}.git"
@@ -43,10 +44,20 @@ class GithubWebhooksController < ActionController::Base
     expected_url     = "https://#{instructor_token}@github.com/#{expected_repo}.git"
     results_repo     = "#{org}/results-#{project}-#{user}"
     results_url      = "https://#{instructor_token}@github.com/#{results_repo}.git"
+    grade_repo       = "#{org}/grade-#{project}-#{user}"
+    grade_url        = "https://#{instructor_token}@github.com/#{results_repo}.git"
+
 
     Rails.application.config.logger.info type
     case type
     when 'results'
+      if not organization.user.github_client.repository?(grade_repo)
+        organization.user.github_client.create_repository("grade-#{project}-#{user}", :organization => org, :private => "true")
+        Octokit.collaborators(student_repo).each do |collaborator|
+          organization.user.github_client.add_collaborator(grade_repo, collaborator.login)
+        end
+      end
+      GenerateGradeJob.perform_later(student_url,expected_url,grade_url)
     when 'expected'
     when 'grader'
       Rails.application.config.logger.info "Does the repo exist: #{organization.user.github_client.repository?(expected_repo)}"

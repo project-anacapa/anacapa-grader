@@ -2,12 +2,7 @@
 class Grade
 
   attr_reader :testables
-  def initialize(user,owner,assignment)
-    github_user = GitHubUser.new(user.github_client)
-
-    results_url = "https://#{owner.token}@github.com/classroom-test-1/results-#{assignment}-#{github_user.user.login}.git"
-    expected_url = "https://#{owner.token}@github.com/classroom-test-1/expected-#{assignment}.git"
-
+  def initialize(results_url, expected_url)
     Dir.mktmpdir do |dir|
       Git.clone(results_url,  "results" , :path => dir)
       Git.clone(expected_url, "expected", :path => dir)
