@@ -53,7 +53,12 @@ class GithubWebhooksController < ActionController::Base
     when 'results'
       if not organization.user.github_client.repository?(grade_repo)
         organization.user.github_client.create_repository("grade-#{project}-#{user}", :organization => org, :private => "true")
-        Octokit.collaborators(student_repo).each do |collaborator|
+      end
+      collaborators = Octokit.collaborators(student_repo)
+      Rails.application.config.logger.info collaborators
+      collaborators.each do |collaborator|
+        if not organization.user.github_client.collaborator?(grade_repo, collaborator.login)
+          Rails.application.config.logger.info collaborator.login
           organization.user.github_client.add_collaborator(grade_repo, collaborator.login)
         end
       end
