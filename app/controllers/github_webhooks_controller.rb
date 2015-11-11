@@ -46,14 +46,14 @@ class GithubWebhooksController < ActionController::Base
     results_repo     = "#{org}/results-#{project}-#{user}"
     results_url      = "https://#{instructor_token}@github.com/#{results_repo}.git"
     grade_repo_short = "grade-#{project}-#{user}"
-    grade_repo       = "#{org}/${grade_repo_short}"
+    grade_repo       = "#{org}/#{grade_repo_short}"
     grade_url        = "https://#{instructor_token}@github.com/#{results_repo}.git"
 
 
     Rails.application.config.logger.info type
     case type
     when 'results'
-      if organization.user.github_client.repository?(grade_repo) == false
+      if not organization.user.github_client.repository?(grade_repo)
         organization.user.github_client.create_repository(grade_repo_short, :organization => org, :private => "true")
       end
       collaborators = Octokit.collaborators(student_repo_short,:organization => org)
