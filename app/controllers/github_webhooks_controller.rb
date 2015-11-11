@@ -53,7 +53,7 @@ class GithubWebhooksController < ActionController::Base
     Rails.application.config.logger.info type
     case type
     when 'results'
-      if organization.user.github_client.repository?(grade_repo_short, :organization =>org) == false
+      if organization.user.github_client.repository?(grade_repo) == false
         organization.user.github_client.create_repository(grade_repo_short, :organization => org, :private => "true")
       end
       collaborators = Octokit.collaborators(student_repo_short,:organization => org)
