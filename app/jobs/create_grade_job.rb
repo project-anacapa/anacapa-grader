@@ -4,8 +4,6 @@ class CreateGradeJob < ActiveJob::Base
   def perform(results_url,expected_url,grade_url)
     grade = Grade.new(results_url,expected_url)
     Dir.mktmpdir do |dir|
-
-
       Git.clone(grade_url, "grade", :path => dir)
       readme = "#{dir}/grade/README.md"
       File.open(readme, "w") do |f|

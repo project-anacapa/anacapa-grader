@@ -36,8 +36,8 @@ class GithubWebhooksController < ActionController::Base
     organization = Organization.find_by name: org
 
     instructor_token = organization.user.token
-    student_repo     =
-    student_url      = "https://#{instructor_token}@github.com/#{org}/#{project}-#{user}.git"
+    student_repo     = "#{org}/#{project}-#{user}"
+    student_url      = "https://#{instructor_token}@github.com/#{student_repo}.git"
     grader_repo    = "#{org}/grader-#{project}"
     grader_url     = "https://#{instructor_token}@github.com/#{grader_repo}.git"
     expected_repo    = "#{org}/expected-#{project}"
@@ -57,7 +57,7 @@ class GithubWebhooksController < ActionController::Base
           organization.user.github_client.add_collaborator(grade_repo, collaborator.login)
         end
       end
-      GenerateGradeJob.perform_later(student_url,expected_url,grade_url)
+      GenerateGradeJob.perform_later(results_url,expected_url,grade_url)
     when 'expected'
     when 'grader'
       Rails.application.config.logger.info "Does the repo exist: #{organization.user.github_client.repository?(expected_repo)}"
