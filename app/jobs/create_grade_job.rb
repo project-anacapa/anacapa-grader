@@ -3,9 +3,10 @@ class CreateGradeJob < ActiveJob::Base
 
   def perform(results_url,expected_url,grade_url)
     grade = Grade.new(results_url,expected_url)
-    grade.remove('.',{:recursive =>  TRUE})
     Dir.mktmpdir do |dir|
-      Git.clone(grade_url, "grade", :path => dir)
+      g = Git.clone(grade_url, "grade", :path => dir)
+      g.remove('.',{:recursive =>  TRUE})
+
       readme = "#{dir}/grade/README.md"
       File.open(readme, "w") do |f|
         grade.testables.each do |testable_name, testable|
@@ -18,8 +19,9 @@ class CreateGradeJob < ActiveJob::Base
           end
         end
       end
+      push(g)
+
     end
-    push(grade)
   end
 
   def push(g)
