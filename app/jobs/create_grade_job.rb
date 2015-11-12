@@ -15,11 +15,18 @@ class CreateGradeJob < ActiveJob::Base
       File.open(readme, "w") do |f|
         grade.testables.each do |testable_name, testable|
           f.write("##{testable_name}\n")
+          f.write("| test name ")
+          f.write("| grade ")
+          f.write("| total points ")
+          f.write("| diff |\n")
+
+          f.write("| ------------- | ------------- | ------------- | ------------- |")
+
           testable.each do |testcase_name, testcase|
-            f.write("|#{testcase_name}")
-            f.write("|testcase[:grade]")
-            f.write("|testcase[:total_points]")
-            f.write("|testcase[:diff]|")
+            f.write("| #{testcase_name} ")
+            f.write("| #{testcase[:grade]} ")
+            f.write("| #{testcase[:total_points]} ")
+            f.write("| #{testcase[:diff]} |\n")
           end
         end
       end
