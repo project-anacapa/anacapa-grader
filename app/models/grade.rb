@@ -38,13 +38,20 @@ class Grade
       testcase_name = file
       if File.directory?(testcase_path)
         expected_filename = "#{testcase_path}/expected_file"
+        json_filename = "#{testcase_path}/index.json"
+        testcase = JSON.parse(File.read(json_filename))
         result_filename = "#{result_path}/#{testcase_name}"
         diff = Diffy::Diff.new( result_filename,expected_filename, :source => 'files')
 
+        grade_points = testcase ['points']
+        if diff != ""
+          grade_points = 0
+        end
+
         test[testcase_name] =
         {
-          :grade => 10,
-          :total_points => 10,
+          :grade => grade_poitns,
+          :total_points => testcase['points'],
           :diff => diff.to_s(:html)
         }
       end
