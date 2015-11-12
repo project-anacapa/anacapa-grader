@@ -26,7 +26,7 @@ class CreateGradeJob < ActiveJob::Base
             f.write("| #{testcase_name} ")
             f.write("| #{testcase[:grade]} ")
             f.write("| #{testcase[:total_points]} ")
-            f.write("| #{testcase[:diff]} |\n")
+            f.write("| #{testcase[:diff].gsub!(/\n/, "")} |\n")
           end
         end
       end
