@@ -61,7 +61,7 @@ class GithubWebhooksController < ActionController::Base
       #collaborators.each do |collaborator|
       if not organization.user.github_client.collaborator?(grade_repo, user)
         #Rails.application.config.logger.info collaborator.login
-        organization.user.github_client.add_collaborator(grade_repo, collaborator.login)
+        organization.user.github_client.add_collaborator(grade_repo, user)
       end
       #end
       CreateGradeJob.perform_later(results_url,expected_url,grade_url)
