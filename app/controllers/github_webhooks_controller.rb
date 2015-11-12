@@ -39,8 +39,8 @@ class GithubWebhooksController < ActionController::Base
     student_repo_short = "#{project}-#{user}"
     student_repo     = "#{org}/#{student_repo_short}"
     student_url      = "https://#{instructor_token}@github.com/#{student_repo}.git"
-    grader_repo    = "#{org}/grader-#{project}"
-    grader_url     = "https://#{instructor_token}@github.com/#{grader_repo}.git"
+    grader_repo      = "#{org}/grader-#{project}"
+    grader_url       = "https://#{instructor_token}@github.com/#{grader_repo}.git"
     expected_repo    = "#{org}/expected-#{project}"
     expected_url     = "https://#{instructor_token}@github.com/#{expected_repo}.git"
     results_repo     = "#{org}/results-#{project}-#{user}"
@@ -56,12 +56,12 @@ class GithubWebhooksController < ActionController::Base
       if not organization.user.github_client.repository?(grade_repo)
         organization.user.github_client.create_repository(grade_repo_short, :organization => org, :private => "true")
       end
-      collaborators = Octokit.collaborators(student_repo_short, :organization =>org)
+      collaborators = Octokit.collaborators(student_repo, headers: new_org_permissions_header)
       Rails.application.config.logger.info collaborators
       collaborators.each do |collaborator|
-        if not organization.user.github_client.collaborator?(grade_repo, collaborator.login)
+        if not organization.user.github_client.collaborator?(grade_repo, collaborator.login, headers: new_org_permissions_header)
           Rails.application.config.logger.info collaborator.login
-          organization.user.github_client.add_collaborator(grade_repo, collaborator.login)
+          organization.user.github_client.add_collaborator(grade_repo, collaborator.login, headers: new_org_permissions_header)
         end
       end
       CreateGradeJob.perform_later(results_url,expected_url,grade_url)
@@ -86,4 +86,8 @@ class GithubWebhooksController < ActionController::Base
   def webhook_secret(payload)
     ENV['GITHUB_WEBHOOK_SECRET']
   end
+  def new_org_permissions_header
+    { accept: 'application/vnd.github.ironman-preview+json' }
+  end
+
 end
