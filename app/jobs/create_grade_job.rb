@@ -5,7 +5,11 @@ class CreateGradeJob < ActiveJob::Base
     grade = Grade.new(results_url,expected_url)
     Dir.mktmpdir do |dir|
       g = Git.clone(grade_url, "grade", :path => dir)
-      g.remove('.',{:recursive =>  TRUE})
+      begin
+        g.remove('.',{:recursive =>  TRUE})
+      rescue
+      end
+
 
       readme = "#{dir}/grade/README.md"
       File.open(readme, "w") do |f|
