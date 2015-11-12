@@ -56,12 +56,12 @@ class GithubWebhooksController < ActionController::Base
       if not organization.user.github_client.repository?(grade_repo)
         organization.user.github_client.create_repository(grade_repo_short, :organization => org, :private => "true")
       end
-      collaborators = Octokit.collaborators(student_repo, headers: new_org_permissions_header)
+      collaborators = Octokit.collaborators(student_repo)
       Rails.application.config.logger.info collaborators
       collaborators.each do |collaborator|
-        if not organization.user.github_client.collaborator?(grade_repo, collaborator.login, headers: new_org_permissions_header)
+        if not organization.user.github_client.collaborator?(grade_repo, collaborator.login)
           Rails.application.config.logger.info collaborator.login
-          organization.user.github_client.add_collaborator(grade_repo, collaborator.login, headers: new_org_permissions_header)
+          organization.user.github_client.add_collaborator(grade_repo, collaborator.login)
         end
       end
       CreateGradeJob.perform_later(results_url,expected_url,grade_url)
@@ -86,6 +86,7 @@ class GithubWebhooksController < ActionController::Base
   def webhook_secret(payload)
     ENV['GITHUB_WEBHOOK_SECRET']
   end
+
   def new_org_permissions_header
     { accept: 'application/vnd.github.ironman-preview+json' }
   end
