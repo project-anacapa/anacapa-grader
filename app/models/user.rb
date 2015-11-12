@@ -26,7 +26,11 @@ class User < ActiveRecord::Base
   end
 
   def github_client
-    @github_client ||= Octokit::Client.new(access_token: token, auto_paginate: true)
+    @github_client ||= Octokit::Client.new(access_token: token,
+     auto_paginate: true,
+     client_id: Rails.application.secrets.github_client_id,
+     client_secret: Rails.application.secrets.github_client_secret 
+     )
   end
 
   def github_client_scopes
