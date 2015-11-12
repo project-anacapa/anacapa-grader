@@ -44,7 +44,7 @@ class Grade
         diff = Diffy::Diff.new( result_filename,expected_filename, :source => 'files')
 
         grade_points = testcase ['points']
-        if diff != ""
+        if diff.to_a != []
           grade_points = 0
         end
 
