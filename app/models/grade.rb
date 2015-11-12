@@ -50,7 +50,7 @@ class Grade
 
         test[testcase_name] =
         {
-          :grade => grade_poitns,
+          :grade => grade_points,
           :total_points => testcase['points'],
           :diff => diff.to_s(:html)
         }
