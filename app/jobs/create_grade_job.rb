@@ -13,9 +13,9 @@ class CreateGradeJob < ActiveJob::Base
           f.write("##{testable_name}\n")
           testable.each do |testcase_name, testcase|
             f.write("|#{testcase_name}")
-            f.write("testcase[:grade]")
-            f.write("testcase[:total_points]")
-            f.write("testcase[:diff]")
+            f.write("|testcase[:grade]")
+            f.write("|testcase[:total_points]")
+            f.write("|testcase[:diff]|")
           end
         end
       end

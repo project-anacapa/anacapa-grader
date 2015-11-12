@@ -47,7 +47,7 @@ class GithubWebhooksController < ActionController::Base
     results_url      = "https://#{instructor_token}@github.com/#{results_repo}.git"
     grade_repo_short = "grade-#{project}-#{user}"
     grade_repo       = "#{org}/#{grade_repo_short}"
-    grade_url        = "https://#{instructor_token}@github.com/#{results_repo}.git"
+    grade_url        = "https://#{instructor_token}@github.com/#{grade_repo}.git"
 
 
     Rails.application.config.logger.info type
