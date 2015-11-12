@@ -3,6 +3,7 @@ class CreateGradeJob < ActiveJob::Base
 
   def perform(results_url,expected_url,grade_url)
     grade = Grade.new(results_url,expected_url)
+    grade.remove('.',{:recursive =>  TRUE})
     Dir.mktmpdir do |dir|
       Git.clone(grade_url, "grade", :path => dir)
       readme = "#{dir}/grade/README.md"
@@ -18,6 +19,17 @@ class CreateGradeJob < ActiveJob::Base
         end
       end
     end
-
+    push(grade)
   end
+
+  def push(g)
+    g.add(:all=>true)
+    begin
+      g.commit('grader', {:author=> "AnacapaBot <hunterlaux+anacapabot@gmail.com>"})
+      g.push
+    rescue
+      #commit throws an exception if there is nothing to commit
+    end
+  end
+
 end
