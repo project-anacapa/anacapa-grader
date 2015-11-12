@@ -20,7 +20,7 @@ class CreateGradeJob < ActiveJob::Base
           f.write("| total points ")
           f.write("| diff |\n")
 
-          f.write("| ------------- | ------------- | ------------- | ------------- |")
+          f.write("| ------------- | ------------- | ------------- | ------------- |\n")
 
           testable.each do |testcase_name, testcase|
             f.write("| #{testcase_name} ")

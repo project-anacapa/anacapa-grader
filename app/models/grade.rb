@@ -45,7 +45,7 @@ class Grade
         {
           :grade => 10,
           :total_points => 10,
-          :diff => diff.to_s(:text)
+          :diff => diff.to_s(:html)
         }
       end
     end
