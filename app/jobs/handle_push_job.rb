@@ -163,6 +163,10 @@ class HandlePushJob < ActiveJob::Base
     logger = Logger.new(STDOUT)
     logger.info executable_filename
 
+    stdout_data = ""
+    stderr_data = ""
+    exit_code = nil
+    exit_signal = nil
 
     command = "make -C ~/workspace #{executable_filename}"
     ssh.open_channel do |channel|
