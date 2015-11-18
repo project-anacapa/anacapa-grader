@@ -127,7 +127,7 @@ class HandlePushJob < ActiveJob::Base
       testcase_name = file
       testcase_path = "#{testable_path}/#{file}"
       if File.directory?(testcase_path)
-        FileUtils.mkdir_p("#{results_path}/#{testable_name}")
+
         output_filename = "#{results_path}/#{testable_name}/#{testcase_name}"
         run_testcase(ssh, testcase_path, output_filename)
       end
@@ -146,6 +146,7 @@ class HandlePushJob < ActiveJob::Base
       testable_dir = "#{testables_dir}/#{file}"
       testable_name = file
       output_filename = "#{results_path}/#{testable_name}/build_results"
+      FileUtils.mkdir_p("#{results_path}/#{testable_name}")
       if File.directory?(testable_dir)
         build_testable(ssh,testable_dir,output_filename)
         copy_to_executables(ssh,testable_dir)
