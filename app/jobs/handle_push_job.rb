@@ -77,7 +77,7 @@ class HandlePushJob < ActiveJob::Base
     results_path   = "#{dir}/results/"
 
     create_student_workspace(ssh)
-    build_testables(ssh,testables_path)
+    build_testables(ssh,testables_path,results_path)
 
     #Remove the solutions and the build files. We are going to run untrusted code.
     remove_instructor_files(ssh);
@@ -140,12 +140,14 @@ class HandlePushJob < ActiveJob::Base
   end
 
 
-  def build_testables(ssh,testables_dir)
+  def build_testables(ssh,testables_dir,results_path)
     Dir.foreach(testables_dir) do |file|
       next if file == '.' || file == '..'
       testable_dir = "#{testables_dir}/#{file}"
+      testable_name = file
+      output_filename = "#{results_path}/#{testable_name}/build_results"
       if File.directory?(testable_dir)
-        build_testable(ssh,testable_dir)
+        build_testable(ssh,testable_dir,output_filename)
         copy_to_executables(ssh,testable_dir)
       end
     end
@@ -156,12 +158,45 @@ class HandlePushJob < ActiveJob::Base
     ssh.exec!("cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}")
   end
 
-  def build_testable(ssh,dir)
+  def build_testable(ssh,dir,output_file)
     executable_filename = File.basename(dir)
     logger = Logger.new(STDOUT)
     logger.info executable_filename
-    #we need to figure out which rule to invoke from dir
-    ssh.exec!("make -C ~/workspace #{executable_filename}")
+
+
+      command = "make -C ~/workspace #{executable_filename}"
+      ssh.open_channel do |channel|
+        channel.exec(command) do |ch, success|
+          unless success
+            abort "FAILED: couldn't execute command (ssh.channel.exec)"
+          end
+          channel.on_data do |ch,data|
+            stdout_data+=data
+          end
+          
+          channel.on_extended_data do |ch,type,data|
+            stderr_data+=data
+          end
+          
+          channel.on_request("exit-status") do |ch,data|
+            exit_code = data.read_long
+          end
+          
+          channel.on_request("exit-signal") do |ch, data|
+            exit_signal = data.read_long
+          end
+        end
+      end
+      ssh.loop
+      [stdout_data, stderr_data, exit_code, exit_signal]
+      
+      if(exit_code != 0)
+        File.open(output_file, 'w') do |output|
+          output << stdout_data
+        end
+      end
+    end
+
   end
 
   def run_testcase(ssh,dir,output_file)
