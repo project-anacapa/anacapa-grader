@@ -164,29 +164,29 @@ class HandlePushJob < ActiveJob::Base
     logger.info executable_filename
 
 
-      command = "make -C ~/workspace #{executable_filename}"
-      ssh.open_channel do |channel|
-        channel.exec(command) do |ch, success|
-          unless success
-            abort "FAILED: couldn't execute command (ssh.channel.exec)"
-          end
-          channel.on_data do |ch,data|
-            stdout_data+=data
-          end
-          
-          channel.on_extended_data do |ch,type,data|
-            stderr_data+=data
-          end
-          
-          channel.on_request("exit-status") do |ch,data|
-            exit_code = data.read_long
-          end
-          
-          channel.on_request("exit-signal") do |ch, data|
-            exit_signal = data.read_long
-          end
+    command = "make -C ~/workspace #{executable_filename}"
+    ssh.open_channel do |channel|
+      channel.exec(command) do |ch, success|
+        unless success
+          abort "FAILED: couldn't execute command (ssh.channel.exec)"
+        end
+        channel.on_data do |ch,data|
+          stdout_data+=data
+        end
+        
+        channel.on_extended_data do |ch,type,data|
+          stderr_data+=data
+        end
+        
+        channel.on_request("exit-status") do |ch,data|
+          exit_code = data.read_long
+        end
+        
+        channel.on_request("exit-signal") do |ch, data|
+          exit_signal = data.read_long
         end
       end
+      
       ssh.loop
       [stdout_data, stderr_data, exit_code, exit_signal]
       
@@ -196,7 +196,7 @@ class HandlePushJob < ActiveJob::Base
         end
       end
     end
-
+    
   end
 
   def run_testcase(ssh,dir,output_file)
