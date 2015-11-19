@@ -33,6 +33,7 @@ class Grade
     end
     grade[:project_grade_points] = project_grade_points
     grade[:project_out_of] = project_out_of
+    grade
   end
 
   #If a expected file doesn't exist generate one
