@@ -164,8 +164,7 @@ class HandlePushJob < ActiveJob::Base
     logger = Logger.new(STDOUT)
     logger.info executable_filename
 
-    stdout_data = ""
-    stderr_data = ""
+    make_output = ""
     exit_code = nil
     exit_signal = nil
 
@@ -176,32 +175,30 @@ class HandlePushJob < ActiveJob::Base
           abort "FAILED: couldn't execute command (ssh.channel.exec)"
         end
         channel.on_data do |ch,data|
-          stdout_data+=data
+          make_output +=data
         end
-        
+
         channel.on_extended_data do |ch,type,data|
-          stderr_data+=data
+          make_output +=data
         end
-        
+
         channel.on_request("exit-status") do |ch,data|
           exit_code = data.read_long
         end
-        
+
         channel.on_request("exit-signal") do |ch, data|
           exit_signal = data.read_long
         end
       end
-      
+
       ssh.loop
-      [stdout_data, stderr_data, exit_code, exit_signal]
-      
       if(exit_code != 0)
         File.open(output_file, 'w') do |output|
-          output << stdout_data
+          output << make_output
         end
       end
     end
-    
+
   end
 
   def run_testcase(ssh,dir,output_file)
