@@ -16,17 +16,23 @@ class Grade
   def process_testables(dir)
     grade = {}
     testables_path = "#{dir}/expected/testables"
-
+    grade[:testables] = {}
+    project_grade_points = 0
+    project_out_of = 0
     Dir.foreach(testables_path) do |file|
-    next if file == '.' || file == '..'
+      next if file == '.' || file == '..'
       testable_path = "#{testables_path}/#{file}"
       testable_name = file
       result_path = "#{dir}/results/#{testable_name}"
       if File.directory?(testable_path)
-        grade[testable_name] = generate_grade(testable_path,result_path)
+        testable_results = generate_grade(testable_path,result_path)
+        grade[:testables][testable_name] = testable_results
+        project_grade_points += testable_results[:total_grade_points]
+        project_out_of += testable_results[:total_out_of]
       end
     end
-    grade
+    grade[:project_grade_points] = project_grade_points
+    grade[:project_out_of] = project_out_of
   end
 
   #If a expected file doesn't exist generate one
@@ -77,7 +83,7 @@ class Grade
       end
     end
     test[:total_grade_points] = total_grade_points
-    test[:total_out_of] = total_grade_points
+    test[:total_out_of] = total_out_of
     test
   end
 end

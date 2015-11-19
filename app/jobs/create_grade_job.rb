@@ -14,7 +14,7 @@ class CreateGradeJob < ActiveJob::Base
       readme = "#{dir}/grade/README.md"
       # probably should replace this with https://github.com/github/markup
       File.open(readme, "w") do |f|
-        grade.testables.each do |testable_name, testable|
+        grade.testables[:testables].each do |testable_name, testable|
           f.write("##{testable_name}\n")
           if(testable[:status] == "graded")
             f.write("| test name ")
@@ -36,6 +36,8 @@ class CreateGradeJob < ActiveJob::Base
           f.write("<p>Total Grade Points: #{testable[:total_grade_points]}/#{testable[:total_out_of]}</p>\n")
 
         end
+        f.write("#Final Score\n")
+        f.write("<p>Grade Points: #{grade.testables[:project_grade_points]}/#{grade.testables[:project_out_of]}</p>\n")
       end
       push(g)
 
