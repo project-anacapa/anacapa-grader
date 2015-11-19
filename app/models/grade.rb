@@ -31,7 +31,7 @@ class Grade
   #If a expected file doesn't exist generate one
   def generate_grade(testable_path,result_path)
     test = {}
-    build_results_file = "#{results_path}/build_results"
+    build_results_file = "#{result_path}/build_results"
     if File.exists?(build_results_file)
       file = File.open(build_results_file, "r")
       test[:status]        = "build_failure"
