@@ -33,7 +33,7 @@ class CreateGradeJob < ActiveJob::Base
             end
           else
             f.write("<p>Build failure:</p>\n")
-            f.write("```\n#{testable[:build_results]}\n```")
+            f.write("```\n#{testable[:build_results]}\n```\n")
           end
           f.write("<p>Total Grade Points: #{testable[:total_grade_points]}</p>\n")
           f.write("<p>Out Of: #{testable[:total_out_of]}</p>\n")
