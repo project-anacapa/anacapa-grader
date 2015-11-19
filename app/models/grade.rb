@@ -26,6 +26,7 @@ class Grade
         grade[testable_name] = generate_grade(testable_path,result_path)
       end
     end
+    grade
   end
 
   #If a expected file doesn't exist generate one
