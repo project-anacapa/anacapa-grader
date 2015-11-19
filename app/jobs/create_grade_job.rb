@@ -19,24 +19,21 @@ class CreateGradeJob < ActiveJob::Base
           if(testable[:status] == "graded")
             f.write("| test name ")
             f.write("| grade points ")
-            f.write("| out of ")
             f.write("| diff |\n")
 
-            f.write("| ------------- | ------------- | ------------- | ------------- |\n")
+            f.write("| ------------- | ------------- | ------------- |\n")
 
 
             testable[:testcases].each do |testcase_name, testcase|
               f.write("| #{testcase_name} ")
-              f.write("| #{testcase[:grade_points]} ")
-              f.write("| #{testcase[:out_of]} ")
+              f.write("| #{testcase[:grade_points]}/#{testcase[:out_of]}")
               f.write("| #{testcase[:diff].gsub!(/\n/, "")} |\n")
             end
           else
             f.write("<p>Build failure:</p>\n")
             f.write("```\n#{testable[:build_results]}\n```\n")
           end
-          f.write("<p>Total Grade Points: #{testable[:total_grade_points]}</p>\n")
-          f.write("<p>Out Of: #{testable[:total_out_of]}</p>\n")
+          f.write("<p>Total Grade Points: #{testable[:total_grade_points]}/#{testable[:total_out_of]}</p>\n")
 
         end
       end
