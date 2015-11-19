@@ -43,7 +43,7 @@ class Grade
 
     total_grade_points = 0
     total_out_of  = 0
-
+    test[:testcases] = {}
     Dir.foreach(testable_path) do |file|
       next if file == '.' || file == '..'
       testcase_path = "#{testable_path}/#{file}"
