@@ -31,11 +31,12 @@ class CreateGradeJob < ActiveJob::Base
               f.write("| #{testcase[:diff].gsub!(/\n/, "")} |\n")
             end
           else
+            f.write("##{testable_name}\n")
             f.write("Build failure:\n#{testable[:build_results]}")
           end
           f.write("\n")
-          f.write("Total Grade Points: #{testable[:total_grade_points]}")
-          f.write("Out Of: #{testable[:total_out_of]}")
+          f.write("Total Grade Points: #{testable[:total_grade_points]}\n")
+          f.write("Out Of: #{testable[:total_out_of]}\n")
 
         end
       end
