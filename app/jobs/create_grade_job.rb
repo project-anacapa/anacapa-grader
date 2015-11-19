@@ -14,20 +14,29 @@ class CreateGradeJob < ActiveJob::Base
       readme = "#{dir}/grade/README.md"
       File.open(readme, "w") do |f|
         grade.testables.each do |testable_name, testable|
-          f.write("##{testable_name}\n")
-          f.write("| test name ")
-          f.write("| grade ")
-          f.write("| total points ")
-          f.write("| diff |\n")
+          if(testable[:status] == "graded")
+            f.write("##{testable_name}\n")
+            f.write("| test name ")
+            f.write("| grade points ")
+            f.write("| out of ")
+            f.write("| diff |\n")
 
-          f.write("| ------------- | ------------- | ------------- | ------------- |\n")
+            f.write("| ------------- | ------------- | ------------- | ------------- |\n")
 
-          testable.each do |testcase_name, testcase|
-            f.write("| #{testcase_name} ")
-            f.write("| #{testcase[:grade]} ")
-            f.write("| #{testcase[:total_points]} ")
-            f.write("| #{testcase[:diff].gsub!(/\n/, "")} |\n")
+
+            testable[:testcases].each do |testcase_name, testcase|
+              f.write("| #{testcase_name} ")
+              f.write("| #{testcase[:grade_points]} ")
+              f.write("| #{testcase[:out_of]} ")
+              f.write("| #{testcase[:diff].gsub!(/\n/, "")} |\n")
+            end
+          else
+            f.write("Build failure:\n#{testable[:build_results]}")
           end
+          f.write("\n")
+          f.write("Total Grade Points: #{testable[:total_grade_points]}")
+          f.write("Out Of: #{testable[:total_out_of]}")
+
         end
       end
       push(g)
