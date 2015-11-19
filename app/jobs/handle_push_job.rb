@@ -193,7 +193,7 @@ class HandlePushJob < ActiveJob::Base
 
       ssh.loop
       if(exit_code != 0)
-        File.open(output_file, 'w') do |output|
+        File.open(output_file, 'wb') do |output|
           output << make_output
         end
       end
