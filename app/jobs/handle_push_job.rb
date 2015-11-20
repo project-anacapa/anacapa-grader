@@ -185,6 +185,7 @@ class HandlePushJob < ActiveJob::Base
         channel.on_request("exit-signal") do |ch, data|
           exit_signal = data.read_long
         end
+        channel.wait()
       end
       #ssh.loop
       logger.info make_output
