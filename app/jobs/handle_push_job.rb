@@ -186,7 +186,7 @@ class HandlePushJob < ActiveJob::Base
           exit_signal = data.read_long
         end
       end
-      ssh.loop
+      #ssh.loop
       logger.info make_output
 
 
