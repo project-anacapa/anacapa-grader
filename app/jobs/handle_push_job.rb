@@ -136,7 +136,7 @@ class HandlePushJob < ActiveJob::Base
 
   #Student code should never read the grader files
   def remove_instructor_files(ssh)
-    ssh.exec!('rm -rf ~/grader')
+    ssh.exec!('rm -rf ~/instructor_files ~/student_files ~/student ~/workspace')
   end
 
 
@@ -191,7 +191,7 @@ class HandlePushJob < ActiveJob::Base
         end
       end
 
-      ssh.loop
+      #ssh.loop
       if(exit_code != 0)
         File.open(output_file, 'wb') do |output|
           output << make_output
