@@ -145,7 +145,6 @@ class HandlePushJob < ActiveJob::Base
       FileUtils.mkdir_p("#{results_path}/#{testable_name}")
       if File.directory?(testable_dir)
         build_testable(ssh,testable_dir,output_filename)
-        copy_to_executables(ssh,testable_dir)
       end
     end
   end
@@ -196,6 +195,8 @@ class HandlePushJob < ActiveJob::Base
         File.open(output_file, 'wb') do |output|
           output << make_output
         end
+      else
+        copy_to_executables(ssh,testable_dir)
       end
     end
 
