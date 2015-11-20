@@ -77,10 +77,14 @@ class HandlePushJob < ActiveJob::Base
     results_path   = "#{dir}/results/"
 
     create_student_workspace(ssh)
+    ssh.loop
+
     build_testables(ssh,testables_path,results_path)
+    ssh.loop
 
     #Remove the solutions and the build files. We are going to run untrusted code.
     remove_instructor_files(ssh);
+    ssh.loop
 
     Dir.foreach(testables_path) do |file|
       next if file == '.' || file == '..'
@@ -185,9 +189,8 @@ class HandlePushJob < ActiveJob::Base
         channel.on_request("exit-signal") do |ch, data|
           exit_signal = data.read_long
         end
-        channel.wait()
       end
-      #ssh.loop
+      ssh.loop
       logger.info make_output
 
 
