@@ -187,8 +187,10 @@ class HandlePushJob < ActiveJob::Base
           exit_signal = data.read_long
         end
       end
-
       ssh.loop
+      logger.info make_output
+
+
       if(exit_code != 0)
         File.open(output_file, 'wb') do |output|
           output << make_output
