@@ -66,10 +66,12 @@ class HandlePushJob < ActiveJob::Base
     # ps T selects all processes and threads that belong to the current terminal
     # -N negates it
     ssh.exec!("kill -9 `ps -o pid= -N T`")
+    ssh.loop
   end
 
   def clear_all(ssh)
     ssh.exec!("rm -rf ~/instructor_files ~/student_files ~/student ~/workspace ~/executables")
+    ssh.loop
   end
 
   def process_testables(ssh, dir)
@@ -114,6 +116,7 @@ class HandlePushJob < ActiveJob::Base
     ssh.exec!('cp -r ~/instructor_files/* ~/workspace')
     #create an executables directory
     ssh.exec!('mkdir ~/executables')
+    ssh.loop
   end
 
 
@@ -137,6 +140,7 @@ class HandlePushJob < ActiveJob::Base
   #Student code should never read the grader files
   def remove_instructor_files(ssh)
     ssh.exec!('rm -rf ~/instructor_files ~/student_files ~/student ~/workspace')
+    ssh.loop
   end
 
 
@@ -157,6 +161,7 @@ class HandlePushJob < ActiveJob::Base
   def copy_to_executables(ssh,dir)
     executable_filename = File.basename(dir)
     ssh.exec!("cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}")
+    ssh.loop
   end
 
   def build_testable(ssh,dir,output_file)
@@ -191,7 +196,7 @@ class HandlePushJob < ActiveJob::Base
         end
       end
 
-      #ssh.loop
+      ssh.loop
       if(exit_code != 0)
         File.open(output_file, 'wb') do |output|
           output << make_output
@@ -208,6 +213,7 @@ class HandlePushJob < ActiveJob::Base
       ssh.exec!("cd ~/executables && ./#{testcase_name}") do |channel, stream, data|
         output << data if stream == :stdout
       end
+      ssh.loop
     end
   end
 end
