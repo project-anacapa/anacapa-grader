@@ -149,8 +149,7 @@ class HandlePushJob < ActiveJob::Base
     end
   end
 
-  def copy_to_executables(ssh,dir)
-    executable_filename = File.basename(dir)
+  def copy_to_executables(ssh,executable_filename)
     logger = Logger.new(STDOUT)
     logger.info "cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}"
     logger.info ssh.exec!("cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}")
@@ -196,7 +195,7 @@ class HandlePushJob < ActiveJob::Base
           output << make_output
         end
       else
-        copy_to_executables(ssh,testable_dir)
+        copy_to_executables(ssh,executable_filename)
       end
     end
 
