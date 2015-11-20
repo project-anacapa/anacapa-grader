@@ -132,7 +132,7 @@ class HandlePushJob < ActiveJob::Base
 
   #Student code should never read the grader files
   def remove_instructor_files(ssh)
-    ssh.exec!('rm -rf ~/instructor_files ~/student_files ~/student ~/workspace')
+    #ssh.exec!('rm -rf ~/instructor_files ~/student_files ~/student ~/workspace')
   end
 
 
