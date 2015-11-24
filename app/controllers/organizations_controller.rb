@@ -36,7 +36,7 @@ class OrganizationsController < ApplicationController
       },
       {
         :events => ['push'],
-        :active => true
+        :active => true,
         :secret => ENV['GITHUB_WEBHOOK_SECRET']
       }
     )
