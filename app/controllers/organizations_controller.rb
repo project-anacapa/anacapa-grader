@@ -28,7 +28,7 @@ class OrganizationsController < ApplicationController
     @organization.user = current_user
     #
 
-    @organization.user.github_client.create_org_hook(
+    current_user.github_client.create_org_hook(
       @organization.name,
       {
         :url => 'https://anacapa-grader.herokuapp.com/github_webhooks',
