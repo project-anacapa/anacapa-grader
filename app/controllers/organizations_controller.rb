@@ -32,12 +32,12 @@ class OrganizationsController < ApplicationController
       @organization.name,
       {
         :url => 'https://anacapa-grader.herokuapp.com/github_webhooks',
-        :content_type => 'json'
+        :content_type => 'json',
+        :secret => ENV['GITHUB_WEBHOOK_SECRET']
       },
       {
         :events => ['push'],
-        :active => true,
-        :secret => ENV['GITHUB_WEBHOOK_SECRET']
+        :active => true
       }
     )
 
