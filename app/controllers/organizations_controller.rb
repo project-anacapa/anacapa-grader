@@ -26,6 +26,20 @@ class OrganizationsController < ApplicationController
   def create
     @organization = Organization.new(organization_params)
     @organization.user = current_user
+    #
+
+    @organization.user.github_client.create_org_hook(
+      @organization.name,
+      {
+        :url => 'https://anacapa-grader.herokuapp.com/github_webhooks',
+        :content_type => 'json'
+      },
+      {
+        :events => ['push'],
+        :active => true
+        :secret => ENV['GITHUB_WEBHOOK_SECRET']
+      }
+    )
 
     respond_to do |format|
       if @organization.save
