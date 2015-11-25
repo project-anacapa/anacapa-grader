@@ -52,14 +52,14 @@ module GraderHelper
     create_workspace(ssh)
     testables["testables"].each do |testable|
       testable["make_output"] = build_testable(ssh,testable["make_target"])
-      if(testables["make_output"]["exit_code"] == 0)
+      if(testable["make_output"]["exit_code"] == 0)
         copy_to_executables(ssh,testable["make_target"])
       end
     end
     remove_instructor_files(ssh);
 
     testables["testables"].each do |testable|
-      if(testables["make_output"]["exit_code"] == 0)
+      if(testable["make_output"]["exit_code"] == 0)
         testable["test_cases"].each do |test_case|
           test_case["output"] = run_testcase(ssh, test_case["command"],
                                             test_case["diff_input"].to_sym)
