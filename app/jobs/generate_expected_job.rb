@@ -84,7 +84,7 @@ class GenerateExpectedJob < ActiveJob::Base
 
     output_filename = "#{dir}/expected/expected.json"
     File.open(output_filename, "w") do |file|
-      file << testables.to_json
+      file << JSON.pretty_generate testables
     end
 
   end
