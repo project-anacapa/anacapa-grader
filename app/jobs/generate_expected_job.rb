@@ -5,7 +5,7 @@ class GenerateExpectedJob < ActiveJob::Base
   queue_as :default
   include GraderHelper
 
-  def perform(url, version, grader_url, results_url)
+  def perform(grader_url,expected_url)
     Dir.mktmpdir do |dir|
       # use the directory...
       clone(grader_url, dir, "grader")
