@@ -21,7 +21,7 @@ class GenerateResultsJob < ActiveJob::Base
 
       testables = generate_results(dir)
       #Right now we only support one worker
-      output_filename = "#{dir}/results/expected.json"
+      output_filename = "#{dir}/results/results.json"
       File.open(output_filename, "w") do |file|
         file << JSON.pretty_generate(testables)
       end
