@@ -1,6 +1,8 @@
 require 'net/ssh'
 require 'net/scp'
 
+require_relative 'grader_helper'
+
 class GenerateResultsJob < ActiveJob::Base
   include GraderHelper
 
