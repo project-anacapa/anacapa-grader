@@ -2,8 +2,9 @@ require 'net/ssh'
 require 'net/scp'
 
 class GenerateExpectedJob < ActiveJob::Base
-  queue_as :default
   include GraderHelper
+
+  queue_as :default
 
   def perform(grader_url,expected_url)
     Dir.mktmpdir do |dir|
