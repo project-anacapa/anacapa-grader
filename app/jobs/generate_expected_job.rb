@@ -122,7 +122,7 @@ class GenerateExpectedJob < ActiveJob::Base
 
   def run_testcase(ssh, test_command, output_channel,output_file)
     ssh.exec!("cd ~/executables && #{test_command}") do |channel, stream, data|
-      output << data if stream == output_channel
+      output_file << data if stream == output_channel
     end
   end
 end
