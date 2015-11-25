@@ -1,9 +1,6 @@
 require 'net/ssh'
 require 'net/scp'
 
-require 'grader_helper'
-
-
 class GenerateResultsJob < ActiveJob::Base
   queue_as :default
   include GraderHelper
