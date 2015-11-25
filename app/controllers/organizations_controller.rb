@@ -69,6 +69,21 @@ class OrganizationsController < ApplicationController
   # DELETE /organizations/1
   # DELETE /organizations/1.json
   def destroy
+    #client = current_user.github_client
+    #hooks = client.org_hooks(@organization.name,)
+    #remove_org_hook(
+    #  @organization.name,
+    #  {
+    #    :url => 'https://anacapa-grader.herokuapp.com/github_webhooks',
+    #    :content_type => 'json',
+    #    :secret => ENV['GITHUB_WEBHOOK_SECRET']
+    #  },
+    #  {
+    #    :events => ['push'],
+    #    :active => true
+    #  }
+    #)
+
     @organization.destroy
     respond_to do |format|
       format.html { redirect_to organizations_url, notice: 'Organization was successfully destroyed.' }

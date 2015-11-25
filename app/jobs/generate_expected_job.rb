@@ -27,7 +27,6 @@ class GenerateExpectedJob < ActiveJob::Base
         clear_all(ssh)
         copy_workspace(machine,dir)
         process_testables(ssh,dir)
-        copy_expected(dir)
       end
       push(git_expected)
     end
@@ -61,45 +60,29 @@ class GenerateExpectedJob < ActiveJob::Base
   end
 
   def copy_expected(dir)
-
     FileUtils.cp_r "#{dir}/grader/testables", "#{dir}/expected/"
-  end
-
-  def copy_expectd_old(dir)
-    testables_path = "#{dir}/grader/testables"
-    expected_path = "#{dir}/expected/results"
-
-    Dir.foreach(testables_path) do |file|
-      next if file == '.' || file == '..'
-      testable_path = "#{testables_path}/#{file}"
-      testable_name = file
-      if File.directory?(testable_path)
-        Dir.foreach(testables_path) do |file|
-          next if file == '.' || file == '..'
-          testcase_path = "#{testable_path}/#{file}"
-          testcase_name = file
-          if File.directory?(testcase_path)
-            if File.directory?(testable_path)
-              FileUtils.mkdir_p("#{expected_path}/#{testable_name}")
-              FileUtils.cp("#{testcase_path}/expected_file",
-                "#{expected_path}/#{testable_name}/#{testcase_name}")
-            end
-          end
-        end
-      end
-    end
   end
 
 
   def process_testables(ssh, dir)
-    testables_path = "#{dir}/grader/testables"
+    testable_json = "#{dir}/grader/testables.json"
+    testables = JSON.parse(File.read(testable_json))
+
     create_expected_workspace(ssh)
-    build_testables(ssh,testables_path)
-    Dir.foreach(testables_path) do |file|
-    next if file == '.' || file == '..'
-      testable_path = "#{testables_path}/#{file}"
-      if File.directory?(testable_path)
-        generate_expected(ssh,testable_path)
+
+    testables["testables"].each do |testable|
+      build_testable(ssh,testable["make_target"])
+      copy_to_executables(ssh,testable["make_target"])
+    end
+
+    testables["testables"].each_with_index do |testable, testable_idx|
+      FileUtils.mkdir_p("#{dir}/expected/#{testable_idx}")
+      testable["test_cases"].each_with_index do |test_case, test_case_idx|
+        output_filename = "#{dir}/expected/#{testable_idx}/#{test_case_idx}"
+        File.open(output_filename, "w") do |file|
+          run_testcase(ssh, test_case["command"],
+            test_case["diff_output"].to_sym, output_file)
+        end
       end
     end
   end
@@ -114,42 +97,16 @@ class GenerateExpectedJob < ActiveJob::Base
     ssh.exec!('mkdir ~/executables')
   end
 
-  #If a expected file doesn't exist generate one
-  def generate_expected(ssh,testable_path)
-    Dir.foreach(testable_path) do |file|
-      next if file == '.' || file == '..'
-      testcase_path = "#{testable_path}/#{file}"
-      if File.directory?(testcase_path)
-        expected_filename = "#{testcase_path}/expected_file"
-        if not File.exists?(expected_filename)
-          run_testcase(ssh,testcase_path,expected_filename)
-        end
-      end
-    end
-  end
-
   def clone(url,dir,name)
     Git.clone(url, name, :path => dir)
   end
 
   def push(g)
     g.add(:all=>true)
-
     begin
       g.commit('grader', {:author=> "AnacapaBot <hunterlaux+anacapabot@gmail.com>"})
       g.push
     rescue
-    end
-  end
-
-  def build_testables(ssh,testables_dir)
-    Dir.foreach(testables_dir) do |file|
-      next if file == '.' || file == '..'
-      testable_dir = "#{testables_dir}/#{file}"
-      if File.directory?(testable_dir)
-        build_testable(ssh,testable_dir)
-        copy_to_executables(ssh,testable_dir)
-      end
     end
   end
 
@@ -158,19 +115,14 @@ class GenerateExpectedJob < ActiveJob::Base
     ssh.exec!("cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}")
   end
 
-  def build_testable(ssh,dir)
-    executable_filename = File.basename(dir)
-    logger = Logger.new(STDOUT)
-    logger.info executable_filename
+  def build_testable(ssh,make_target)
     #we need to figure out which rule to invoke from dir
-    ssh.exec!("make -C ~/workspace #{executable_filename}")
+    ssh.exec!("make -C ~/workspace #{make_target}")
   end
-  def run_testcase(ssh,dir,output_file)
-    testcase_name = File.basename(dir)
-    File.open(output_file, 'w') do |output|
-      ssh.exec!("cd ~/executables && ./#{testcase_name}") do |channel, stream, data|
-        output << data if stream == :stdout
-      end
+
+  def run_testcase(ssh, test_command, output_channel,output_file)
+    ssh.exec!("cd ~/executables && #{test_command}") do |channel, stream, data|
+      output << data if stream == output_channel
     end
   end
 end
