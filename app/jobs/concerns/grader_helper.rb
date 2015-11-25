@@ -125,6 +125,7 @@ module GraderHelper
         end
       end
     end
+    ssh.loop
     {
      "make_output" => make_output,
      "exit_code"   => exit_code
