@@ -101,11 +101,9 @@ module GraderHelper
   end
 
   def build_testable(ssh,make_target)
-
     make_output = ""
     exit_code = nil
     exit_signal = nil
-
     command = "make -C ~/workspace #{make_target}"
     ssh.open_channel do |channel|
       channel.exec(command) do |ch, success|
@@ -115,37 +113,32 @@ module GraderHelper
         channel.on_data do |ch,data|
           make_output +=data
         end
-
         channel.on_extended_data do |ch,type,data|
           make_output +=data
         end
-
         channel.on_request("exit-status") do |ch,data|
           exit_code = data.read_long
         end
-
         channel.on_request("exit-signal") do |ch, data|
           exit_signal = data.read_long
         end
       end
-
-      {
-       "make_output" => make_output,
-       "exit_code"   => exit_code
-      }
-
     end
+    {
+     "make_output" => make_output,
+     "exit_code"   => exit_code
+    }
+  end
 
-    def run_testcase(ssh, test_command, output_channel)
-      output = ""
-      ssh.exec!("cd ~/executables && #{test_command}") do |channel, stream, data|
-        output+= data if stream == output_channel
-      end
-      output
+  def run_testcase(ssh, test_command, output_channel)
+    output = ""
+    ssh.exec!("cd ~/executables && #{test_command}") do |channel, stream, data|
+      output+= data if stream == output_channel
     end
+    output
+  end
 
-    def remove_instructor_files(ssh)
-      ssh.exec!('rm -rf ~/instructor_files ~/student_files ~/student ~/workspace')
-    end
-
+  def remove_instructor_files(ssh)
+    ssh.exec!('rm -rf ~/instructor_files ~/student_files ~/student ~/workspace')
+  end
 end
