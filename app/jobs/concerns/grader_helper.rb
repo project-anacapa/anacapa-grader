@@ -55,9 +55,9 @@ module GraderHelper
 
     create_workspace(ssh)
     testables["testables"].each do |testable|
-      testable["make_output"] = build_testable(ssh,testable["make_target"])
+      testable["make_output"] = build_testable(ssh,testable["build_command"])
       if(testable["make_output"]["exit_code"] == 0)
-        copy_to_executables(ssh,testable["make_target"])
+        copy_to_executables(ssh,testable["executable_files"])
       end
     end
     remove_instructor_files(ssh);
@@ -109,17 +109,18 @@ module GraderHelper
     end
   end
 
-  def copy_to_executables(ssh,executable_filename)
-    ssh.exec!("cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}")
-    ssh.loop
-
+  def copy_to_executables(ssh,executable_filenames)
+    executable_filenames.each do |filename|
+      ssh.exec!("cp ~/workspace/#{filename} ~/executables/#{filename}")
+      ssh.loop
+    end
   end
 
-  def build_testable(ssh,make_target)
+  def build_testable(ssh,build_target)
     make_output = ""
     exit_code = nil
     exit_signal = nil
-    command = "make -C ~/workspace #{make_target}"
+    command = "cd ~/workspace && #{build_command}"
     ssh.open_channel do |channel|
       channel.exec(command) do |ch, success|
         unless success
