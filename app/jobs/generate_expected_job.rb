@@ -75,16 +75,17 @@ class GenerateExpectedJob < ActiveJob::Base
       copy_to_executables(ssh,testable["make_target"])
     end
 
-    testables["testables"].each_with_index do |testable, testable_idx|
-      FileUtils.mkdir_p("#{dir}/expected/#{testable_idx}")
-      testable["test_cases"].each_with_index do |test_case, test_case_idx|
-        output_filename = "#{dir}/expected/#{testable_idx}/#{test_case_idx}"
-        File.open(output_filename, "w") do |file|
-          run_testcase(ssh, test_case["command"],
-            test_case["diff_input"].to_sym, file)
+    testables["testables"].each do |testable|
+      testable["test_cases"].each do |test_case|
+        test_case["output"] = run_testcase(ssh, test_case["command"],
+                                           test_case["diff_input"].to_sym)
         end
-      end
     end
+
+    File.open(output_filename, "w") do |file|
+      file << testables.to_json
+    end
+
   end
 
   def create_expected_workspace(ssh)
@@ -120,9 +121,11 @@ class GenerateExpectedJob < ActiveJob::Base
     ssh.exec!("make -C ~/workspace #{make_target}")
   end
 
-  def run_testcase(ssh, test_command, output_channel,output_file)
+  def run_testcase(ssh, test_command, output_channel)
+    output = ""
     ssh.exec!("cd ~/executables && #{test_command}") do |channel, stream, data|
-      output_file << data if stream == output_channel
+      output+= data if stream == output_channel
     end
+    output
   end
 end
