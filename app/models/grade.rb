@@ -25,7 +25,7 @@ class Grade
     project_grade_points = 0
     project_out_of = 0
 
-    testables = expected_testables["testables"].zip(expected_testables["testables"])
+    testables = expected_testables["testables"].zip(results_testables["testables"])
     testables.each do |expected, results|
       testable_results = generate_grade(expected,results)
       grade[:testables][expected["make_target"]] = testable_results
@@ -59,7 +59,7 @@ class Grade
 
       if diff.to_a != []
         grade_points = 0
-        diff_string = diff.to_s(:html)
+        diff_string  = diff.to_s(:html)
       else
         grade_points = e_case['points']
         diff_string  = ""
