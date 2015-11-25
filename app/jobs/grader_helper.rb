@@ -1,7 +1,8 @@
 module GraderHelper
+
   def generate_results (dir)
     machine = WorkerMachine.get_idle_machine()
-    testables = Nil
+    testables = nil
     Rails.application.config.logger.info "SSH machine #{machine.host}, #{machine.private_key}, #{machine.port}, #{machine.user}"
     Net::SSH.start(machine.host, machine.user,
                    :port => machine.port,
