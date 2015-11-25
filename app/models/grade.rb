@@ -61,11 +61,11 @@ class Grade
         grade_points = 0
         diff_string = diff.to_s(:html)
       else
-          grade_points = 0
+          grade_points = e_case['points']
           diff_string  = ""
       end
       out_of = e_case['points']
-      test[:testcases][e_case[:command]] =
+      test[:testcases][e_case["command"]] =
       {
           :grade_points  => grade_points,
           :out_of        => out_of,
