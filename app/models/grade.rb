@@ -56,13 +56,13 @@ class Grade
     cases = expected["test_cases"].zip(results["test_cases"])
     cases.each do |e_case, r_case|
       diff = Diffy::Diff.new(e_case["output"], r_case["output"], :source => 'strings')
-      grade_points = e_case['points']
+
       if diff.to_a != []
         grade_points = 0
         diff_string = diff.to_s(:html)
       else
-          grade_points = e_case['points']
-          diff_string  = ""
+        grade_points = e_case['points']
+        diff_string  = ""
       end
       out_of = e_case['points']
       test[:testcases][e_case["command"]] =
