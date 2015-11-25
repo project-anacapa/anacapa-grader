@@ -21,13 +21,13 @@ module GraderHelper
   def copy_workspace(machine,dir)
     ssh = {:port => machine.port,
            :key_data => machine.private_key }
+    Net::SCP.upload!(machine.host, machine.user,
+             "#{dir}/student", "student_files",
+             :recursive => TRUE,
+             :ssh => ssh)
 
     Net::SCP.upload!(machine.host, machine.user,
       "#{dir}/grader/instructor_files", ".",
-      :recursive => TRUE,
-      :ssh => ssh)
-    Net::SCP.upload!(machine.host, machine.user,
-      "#{dir}/student", "student_files",
       :recursive => TRUE,
       :ssh => ssh)
   end
