@@ -28,10 +28,9 @@ class Grade
     testables = expected_testables["testables"].zip(results_testables["testables"])
     testables.each do |expected, results|
       testable_results = generate_grade(expected,results)
-      grade[:testables][expected["make_target"]] = testable_results
+      grade[:testables][expected["build_command"]] = testable_results
       project_grade_points += testable_results[:total_grade_points]
       project_out_of += testable_results[:total_out_of]
-
     end
     grade[:project_grade_points] = project_grade_points
     grade[:project_out_of] = project_out_of
@@ -43,7 +42,7 @@ class Grade
     test = {}
     if expected["make_output"]["exit_code"] != 0
       test[:status]        = "build_failure"
-      test[:build_results] = expected["make_output"]["make_output"]
+      test[:build_results] = results["make_output"]["make_output"]
     else
       test[:status]        = "graded"
       test[:build_results] = "" #no need for build results if it is graded
@@ -75,7 +74,7 @@ class Grade
       total_out_of       += out_of
     end
     test[:total_grade_points] = total_grade_points
-    test[:total_out_of] = total_out_of
+    test[:total_out_of]       = total_out_of
     test
   end
 end
