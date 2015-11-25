@@ -3,7 +3,6 @@ require 'net/scp'
 
 class GenerateExpectedJob < ActiveJob::Base
   include GraderHelper
-
   queue_as :default
 
   def perform(grader_url,expected_url)
