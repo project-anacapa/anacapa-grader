@@ -38,11 +38,15 @@ module GraderHelper
     # ps T selects all processes and threads that belong to the current terminal
     # -N negates it
     ssh.exec!("kill -9 `ps -o pid= -N T`")
+    ssh.loop
+
   end
 
 
   def clear_all(ssh)
     ssh.exec!("rm -rf ~/instructor_files ~/student_files ~/student ~/workspace ~/executables")
+    ssh.loop
+
   end
 
   def process_testables(ssh, dir)
@@ -71,12 +75,20 @@ module GraderHelper
 
   def create_workspace(ssh)
     ssh.exec!('mkdir ~/workspace')
+    ssh.loop
+
     #assume we use all student files
     ssh.exec!('cp -r ~/student_files/* ~/workspace')
+    ssh.loop
+
     #assume we use all instructor files
     ssh.exec!('cp -r ~/instructor_files/* ~/workspace')
+    ssh.loop
+
     #create an executables directory
     ssh.exec!('mkdir ~/executables')
+    ssh.loop
+
   end
 
   def clone(url,dir,name)
@@ -99,6 +111,8 @@ module GraderHelper
 
   def copy_to_executables(ssh,executable_filename)
     ssh.exec!("cp ~/workspace/#{executable_filename} ~/executables/#{executable_filename}")
+    ssh.loop
+
   end
 
   def build_testable(ssh,make_target)
@@ -137,6 +151,8 @@ module GraderHelper
     ssh.exec!("cd ~/executables && #{test_command}") do |channel, stream, data|
       output+= data if stream == output_channel
     end
+    ssh.loop
+
     output
   end
 
