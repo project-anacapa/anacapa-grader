@@ -51,7 +51,7 @@ module GraderHelper
 
     create_workspace(ssh)
     testables["testables"].each do |testable|
-      testables["make_output"] = build_testable(ssh,testable["make_target"])
+      testable["make_output"] = build_testable(ssh,testable["make_target"])
       if(testables["make_output"]["exit_code"] == 0)
         copy_to_executables(ssh,testable["make_target"])
       end
