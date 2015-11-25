@@ -116,7 +116,7 @@ module GraderHelper
     end
   end
 
-  def build_testable(ssh,build_target)
+  def build_testable(ssh,build_command)
     make_output = ""
     exit_code = nil
     exit_signal = nil
