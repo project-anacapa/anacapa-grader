@@ -1,5 +1,5 @@
 module GraderHelper
-  def generateResults (dir)
+  def generate_results (dir)
     machine = WorkerMachine.get_idle_machine()
     testables = Nil
     Rails.application.config.logger.info "SSH machine #{machine.host}, #{machine.private_key}, #{machine.port}, #{machine.user}"
