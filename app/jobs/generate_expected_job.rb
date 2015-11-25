@@ -81,7 +81,7 @@ class GenerateExpectedJob < ActiveJob::Base
         output_filename = "#{dir}/expected/#{testable_idx}/#{test_case_idx}"
         File.open(output_filename, "w") do |file|
           run_testcase(ssh, test_case["command"],
-            test_case["diff_input"].to_sym, output_file)
+            test_case["diff_input"].to_sym, file)
         end
       end
     end
