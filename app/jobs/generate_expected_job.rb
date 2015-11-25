@@ -119,7 +119,8 @@ class GenerateExpectedJob < ActiveJob::Base
 
   def build_testable(ssh,make_target)
     #we need to figure out which rule to invoke from dir
-    ssh.exec!("make -C ~/workspace #{make_target}")
+    output = ssh.exec!("make -C ~/workspace #{make_target}")
+    Rails.application.config.logger.info "BUILD RESULTS #{output}"
   end
 
   def run_testcase(ssh, test_command, output_channel)
