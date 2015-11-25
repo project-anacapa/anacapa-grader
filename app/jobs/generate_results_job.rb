@@ -1,6 +1,9 @@
 require 'net/ssh'
 require 'net/scp'
 
+require 'grader_helper'
+
+
 class GenerateResultsJob < ActiveJob::Base
   queue_as :default
   include GraderHelper
@@ -24,7 +27,6 @@ class GenerateResultsJob < ActiveJob::Base
       File.open(output_filename, "w") do |file|
         file << JSON.pretty_generate(testables)
       end
-
       push(git_results)
     end
   end
