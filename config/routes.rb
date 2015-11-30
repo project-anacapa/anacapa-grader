@@ -66,6 +66,11 @@ Rails.application.routes.draw do
 
   get '/grades/:id(.:format)', to: 'grades#show', as: 'grades'
 
+  get '/register', to: 'email_registration#register', as: 'register'
+
+  match '/register/callback', to: 'email_registration#callback',  via: [:get, :post]
+
+
   #resource :grades, only: [:index, :show], defaults: { formats: :json }
 
   resource :github_webhooks, only: :create, defaults: { formats: :json }
