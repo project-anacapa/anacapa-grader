@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   end
 
   def required_scopes
-    %w(uuser:email repo delete_repo repo_deployment admin:org admin:org_hook)
+    %w(user:email repo delete_repo repo_deployment admin:org admin:org_hook)
   end
 
   def adequate_scopes?
