@@ -41,7 +41,9 @@ class GradeReport
            @students[fields[2]] = {email: nil, verified: false}
          end
          grade_json =  organization.user.github_client.contents(repo.full_name, :path => 'index.json')
-         @students[fields[2]][:grade] = JSON.parse(grade_json)
+         Rails.application.config.logger.info grade_json
+
+         #@students[fields[2]][:grade] = JSON.parse(grade_json)
        end
      end
   end
