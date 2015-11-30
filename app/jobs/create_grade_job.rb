@@ -12,6 +12,8 @@ class CreateGradeJob < ActiveJob::Base
 
 
       readme = "#{dir}/grade/README.md"
+      json = "#{dir}/grade/index.json"
+
       # probably should replace this with https://github.com/github/markup
       File.open(readme, "w") do |f|
         grade.testables[:testables].each do |testable_name, testable|
@@ -39,8 +41,10 @@ class CreateGradeJob < ActiveJob::Base
         f.write("#Final Score\n")
         f.write("<p>Grade Points: #{grade.testables[:project_grade_points]}/#{grade.testables[:project_out_of]}</p>\n")
       end
+      File.open(json, "w") do |file|
+        file << JSON.pretty_generate(grade.testables)
+      end
       push(g)
-
     end
   end
 
