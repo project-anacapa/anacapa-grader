@@ -1,4 +1,6 @@
 class GradeReport
+
+  attr_reader(:students)
   def initialize(organization, labname)
      repo_list = organization.user.github_client.organization_repositories(organization.name)
 
