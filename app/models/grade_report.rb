@@ -7,7 +7,10 @@ class GradeReport
      @students = {}
      repo_list.each do |repo|
        name = repo[:name]
+       Rails.application.config.logger.info name
        fields =  /grade-(.*)-(.*)/.match(name)
+       Rails.application.config.logger.info fields
+
        if fields and fields[0] == labname
          student = student.find_by_name(fields[1])
          if student
@@ -16,6 +19,7 @@ class GradeReport
            client_id: Rails.application.secrets.email_github_client_id,
            client_secret: Rails.application.secrets.email_github_client_secret
            )
+
            umail_addr = client.emails.find { |email| /.*@umail.ucsb.edu/ =~ email[:email]}
            @students[:fields[1]] = umail_addr
          else
