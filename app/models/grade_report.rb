@@ -6,7 +6,7 @@ class GradeReport
      repo_list.each do |repo|
        name = repo[:name]
        fields =  /grade-(.*)-(.*)/.match(name)
-       if fields[0] == labname
+       if fields and fields[0] == labname
          student = student.find_by_name(fields[1])
          if student
            client = Octokit::Client.new(access_token: student.access_token,
