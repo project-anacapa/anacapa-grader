@@ -35,12 +35,13 @@ class GradeReport
 
            umail_addr = client.emails.find { |email| /.*@umail.ucsb.edu/ =~ email[:email]}
            @students[fields[2]] = umail_addr
-
          else
            Rails.application.config.logger.info "not found student"
 
            @students[fields[2]] = {email: nil, verified: false}
          end
+         grade_json =  organization.user.github_client.contents(repo.full_name, :path => 'index.json')
+         @students[fields[2]][:grade] = JSON.parse(grade_json)
        end
      end
   end
