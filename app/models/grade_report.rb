@@ -17,7 +17,7 @@ class GradeReport
 
 
        if fields != nil and fields[1] == labname
-         student = Student.find_by_name(fields[1])
+         student = Student.find_by(name: fields[1])
          if student
            client = Octokit::Client.new(access_token: student.access_token,
            auto_paginate: true,
