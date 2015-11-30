@@ -9,7 +9,7 @@ class GradeReportsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_grade_report
-      @organization = Organization.find_by(params[:organization_id])
+      @organization = Organization.find_by(id: params[:organization_id])
       @grade_report = GradeReport.new(organization, params[:id])
     end
 
