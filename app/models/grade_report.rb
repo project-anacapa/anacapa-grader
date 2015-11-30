@@ -27,12 +27,12 @@ class GradeReport
            Rails.application.config.logger.info "found student"
 
            umail_addr = client.emails.find { |email| /.*@umail.ucsb.edu/ =~ email[:email]}
-           @students[:fields[2]] = umail_addr
+           @students[fields[2]] = umail_addr
 
          else
            Rails.application.config.logger.info "not found student"
 
-           @students[:fields[1]] = {email: nil, verified: false}
+           @students[fields[2]] = {email: nil, verified: false}
          end
        end
      end
