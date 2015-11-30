@@ -15,7 +15,7 @@ class EmailRegistrationController < ApplicationController
       client_id: Rails.application.secrets.email_github_client_id,
       client_secret: Rails.application.secrets.email_github_client_secret
       )
-    user_name = client.user
+    user_name = client.user.name
     Student.find_or_create_by(user_name: user_name) do
       student.access_token = access_token
     end
