@@ -17,6 +17,7 @@ class EmailRegistrationController < ApplicationController
       )
     user_name = client.user.name
     Student.find_or_create_by(user_name: user_name) do |student|
+      student.user_name    = user_name
       student.access_token = access_token
     end
 
