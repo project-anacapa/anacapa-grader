@@ -10,7 +10,7 @@ class GradeReportsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_grade_report
       @organization = Organization.find_by(id: params[:organization_id])
-      @grade_report = GradeReport.new(organization, params[:id])
+      @grade_report = GradeReport.new(@organization, params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
