@@ -25,8 +25,8 @@ class GradeReport
            client_secret: Rails.application.secrets.email_github_client_secret
            )
            Rails.application.config.logger.info student.access_token
-           Rails.application.config.logger.info Rails.application.secrets.email_github_client_id,
-           Rails.application.config.logger.info Rails.application.secrets.email_github_client_secret,
+           Rails.application.config.logger.info Rails.application.secrets.email_github_client_id
+           Rails.application.config.logger.info Rails.application.secrets.email_github_client_secret
 
            Rails.application.config.logger.info student.access_token
 
