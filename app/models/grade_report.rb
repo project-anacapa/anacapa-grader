@@ -24,7 +24,7 @@ class GradeReport
            client_id: Rails.application.secrets.email_github_client_id,
            client_secret: Rails.application.secrets.email_github_client_secret
            )
-           Rails.application.config.logger.info "found student"
+           Rails.application.config.logger.info client.emails
 
            umail_addr = client.emails.find { |email| /.*@umail.ucsb.edu/ =~ email[:email]}
            @students[fields[2]] = umail_addr
