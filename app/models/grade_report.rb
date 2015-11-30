@@ -16,7 +16,7 @@ class GradeReport
        #Rails.application.config.logger.info fields[0] == labname
 
 
-       if fields != nil and fields[0] == labname
+       if fields != nil and fields[1] == labname
          student = student.find_by_name(fields[1])
          if student
            client = Octokit::Client.new(access_token: student.access_token,
@@ -27,7 +27,7 @@ class GradeReport
            Rails.application.config.logger.info "found student"
 
            umail_addr = client.emails.find { |email| /.*@umail.ucsb.edu/ =~ email[:email]}
-           @students[:fields[1]] = umail_addr
+           @students[:fields[2]] = umail_addr
 
          else
            Rails.application.config.logger.info "not found student"
