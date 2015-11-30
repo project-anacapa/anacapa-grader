@@ -1,7 +1,7 @@
 class EmailRegistrationController < ApplicationController
 
   def register
-     redirect_to "https://github.com/login/oauth/authorize?client_id=#{Rails.application.secrets.email_github_client_id}&scope=email"
+     redirect_to "https://github.com/login/oauth/authorize?client_id=#{Rails.application.secrets.email_github_client_id}&scope=user:email"
   end
 
   def callback
