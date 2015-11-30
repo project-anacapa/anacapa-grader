@@ -31,7 +31,7 @@ class GradeReport
            Rails.application.config.logger.info student.access_token
 
 
-           Rails.application.config.logger.info client
+#           Rails.application.config.logger.info client
 
            umail_addr = client.emails.find { |email| /.*@umail.ucsb.edu/ =~ email[:email]}
            @students[fields[2]] = umail_addr
