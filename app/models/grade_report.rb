@@ -1,5 +1,5 @@
 class GradeReport
-  def initialize(organziation, labname)
+  def initialize(organization, labname)
      repo_list = organization.user.github_client.organization_repositories(organization.name)
 
      @students = {}
