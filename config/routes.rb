@@ -1,11 +1,13 @@
 Rails.application.routes.draw do
-  resources :organizations
+
+  resources :organizations do
+    resources :grade_reports, only: [:show], defaults: { formats: :json }
+  end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
   root 'sessions#new'
-
 
   match '/auth/:provider/callback', to: 'sessions#create',  via: [:get, :post]
   match '/auth/failure',            to: 'sessions#failure', via: [:get, :post]
