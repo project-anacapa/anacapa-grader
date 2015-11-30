@@ -22,3 +22,4 @@ class EmailRegistrationController < ApplicationController
     student.save
 
   end
+end
