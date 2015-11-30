@@ -42,8 +42,8 @@ class GradeReport
          end
          grade_json =  organization.user.github_client.contents(repo.full_name, :path => 'index.json')
          Rails.application.config.logger.info grade_json
-         uri = URI(grade_json[:download_url])
-         @students[fields[2]][:grade] = JSON.parse(Net::HTTP.get(uri))
+         grade_json_file =  Base64.decode64(grade_json[:contents])
+         @students[fields[2]][:grade] = JSON.parse(grade_json_file)
        end
      end
   end
