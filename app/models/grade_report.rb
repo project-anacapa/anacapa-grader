@@ -13,7 +13,7 @@ class GradeReport
 
        Rails.application.config.logger.info fields != nil
 
-       Rails.application.config.logger.info fields[0] == labname
+       #Rails.application.config.logger.info fields[0] == labname
 
 
        if fields != nil and fields[0] == labname
